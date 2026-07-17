@@ -361,7 +361,7 @@
 
       <h4 class="ns-h4">Thông tin cơ bản</h4>
       <div class="field-row">
-        <div class="field"><label>Mã nhân viên *</label><input id="maNhanVien" required placeholder="NV001"></div>
+        <div class="field"><label>Mã nhân viên *</label><input id="maNhanVien" required></div>
         <div class="field"><label>Họ và tên *</label><input id="hoTen" required placeholder="Nguyễn Văn A"></div>
       </div>
       <div class="field-row">
@@ -380,6 +380,7 @@
         <div class="field">
           <label>Phân loại</label>
           <select id="phanLoai">
+            <option value="">-- Chọn --</option>
             <option value="Full-time">Full-time</option>
             <option value="Part-time">Part-time</option>
             <option value="Thời vụ">Thời vụ</option>
@@ -389,9 +390,11 @@
         <div class="field">
           <label>Trạng thái</label>
           <select id="trangThai">
+            <option value="">-- Chọn --</option>
             <option value="Chính thức">Chính thức</option>
             <option value="Thử việc">Thử việc</option>
-            <option value="Đã nghỉ việc">Đã nghỉ việc</option>
+            <option value="Đã nghỉ">Đã nghỉ</option>
+            <option value="Nghỉ tạm thời">Nghỉ tạm thời</option>
           </select>
         </div>
       </div>
