@@ -163,14 +163,34 @@
 
   .list-item{
     display:flex; align-items:center; justify-content:space-between;
+    gap:12px; flex-wrap:wrap;
     padding:12px 14px; border:1px solid var(--line); border-radius:12px; margin-bottom:8px;
   }
-  .list-item a{color:var(--blue); font-weight:600; font-size:14px; text-decoration:none;}
-  .list-item a:hover{text-decoration:underline;}
+  .list-item .list-item-name{color:var(--blue); font-weight:600; font-size:14px;}
+  .list-item .list-item-actions{display:flex; align-items:center; gap:8px; flex-shrink:0;}
+  .btn-sm{padding:7px 13px; font-size:12.5px; border-radius:9px;}
   .list-item .del-btn{
     border:none; background:rgba(220,53,69,0.1); color:#c0392b;
     width:28px;height:28px;border-radius:8px; cursor:pointer; font-size:13px; flex-shrink:0;
   }
+
+  .sub-tabs{display:none; gap:8px; margin-bottom:14px;}
+  .sub-tabs.show{display:flex;}
+  .sub-tabs button{
+    flex:1; padding:9px; border-radius:9px; border:1.5px solid var(--line);
+    background:var(--cream); font-family:inherit; font-size:13px; font-weight:600;
+    color:var(--muted); cursor:pointer; transition:.15s;
+  }
+  .sub-tabs button.sel{border-color:var(--orange); color:var(--orange); background:rgba(243,112,33,0.08);}
+
+  .password-wrap{position:relative;}
+  .password-wrap input{padding-right:42px;}
+  .pw-toggle{
+    position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    border:none; background:none; cursor:pointer; font-size:16px; line-height:1;
+    padding:6px; color:var(--muted); border-radius:8px;
+  }
+  .pw-toggle:hover{background:rgba(3,44,125,0.08);}
   .empty-state{text-align:center; color:var(--muted); font-size:13.5px; padding:24px 0;}
   .admin-add{
     border-top:1px dashed var(--line); margin-top:16px; padding-top:16px;
@@ -322,7 +342,10 @@
     </div>
     <div class="field">
       <label>Mật khẩu HR</label>
-      <input type="password" id="hrPasswordInput" placeholder="Nhập mật khẩu">
+      <div class="password-wrap">
+        <input type="password" id="hrPasswordInput" placeholder="Nhập mật khẩu">
+        <button type="button" class="pw-toggle" id="pwToggleBtn" onclick="togglePwVisibility()" aria-label="Hiện mật khẩu">👁</button>
+      </div>
     </div>
     <button class="btn btn-primary" style="width:100%" onclick="submitHrLogin()">Đăng nhập</button>
     <div class="form-msg" id="loginMsg"></div>
@@ -515,6 +538,10 @@
       <button class="tab-btn" data-loai="PHIẾU ĐÁNH GIÁ" onclick="switchBieuMauTab(this,'PHIẾU ĐÁNH GIÁ')">Phiếu đánh giá</button>
       <button class="tab-btn" data-loai="KHÁC" onclick="switchBieuMauTab(this,'KHÁC')">Khác</button>
     </div>
+    <div class="sub-tabs" id="phieuSubTabs">
+      <button type="button" class="sel" id="phieuBtnUV" onclick="switchPhieuDoiTuong('Ứng viên')">Ứng viên</button>
+      <button type="button" id="phieuBtnNV" onclick="switchPhieuDoiTuong('Nhân viên')">Nhân viên</button>
+    </div>
     <div id="bieuMauList"></div>
 
     <div class="admin-add" id="bieuMauAdmin" style="display:none;">
@@ -562,6 +589,7 @@ const CONFIG = {
 };
 
 let currentBieuMauLoai = 'ĐƠN';
+let currentPhieuDoiTuong = 'Ứng viên';
 let newBmLoai = 'ĐƠN';
 let bieuMauCache = [];
 
@@ -825,11 +853,30 @@ function refreshHrUi(){
   }
 }
 
+function togglePwVisibility(){
+  const input = document.getElementById('hrPasswordInput');
+  const btn = document.getElementById('pwToggleBtn');
+  if (input.type === 'password'){
+    input.type = 'text';
+    btn.textContent = '🙈';
+    btn.setAttribute('aria-label', 'Ẩn mật khẩu');
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+    btn.setAttribute('aria-label', 'Hiện mật khẩu');
+  }
+}
+
 function onHrButtonClick(){
   if (isHrLoggedIn()){
     sessionStorage.removeItem('hr_token');
     refreshHrUi();
   } else {
+    const input = document.getElementById('hrPasswordInput');
+    const pwBtn = document.getElementById('pwToggleBtn');
+    input.type = 'password';
+    pwBtn.textContent = '👁';
+    pwBtn.setAttribute('aria-label', 'Hiện mật khẩu');
     openModal('loginOverlay');
   }
 }
@@ -923,21 +970,52 @@ function switchBieuMauTab(btn, loai){
   document.querySelectorAll('#bieuMauModal .tab-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   currentBieuMauLoai = loai;
+
+  const subTabs = document.getElementById('phieuSubTabs');
+  if (loai === 'PHIẾU ĐÁNH GIÁ'){
+    subTabs.classList.add('show');
+    currentPhieuDoiTuong = 'Ứng viên';
+    document.getElementById('phieuBtnUV').classList.add('sel');
+    document.getElementById('phieuBtnNV').classList.remove('sel');
+  } else {
+    subTabs.classList.remove('show');
+  }
   renderBieuMauList();
+}
+
+function switchPhieuDoiTuong(doiTuong){
+  currentPhieuDoiTuong = doiTuong;
+  document.getElementById('phieuBtnUV').classList.toggle('sel', doiTuong === 'Ứng viên');
+  document.getElementById('phieuBtnNV').classList.toggle('sel', doiTuong === 'Nhân viên');
+  renderBieuMauList();
+}
+
+function toDriveDownloadLink(link){
+  const s = String(link || '');
+  let m = s.match(/\/d\/([a-zA-Z0-9_-]+)/) || s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m && m[1]) return `https://drive.google.com/uc?export=download&id=${m[1]}`;
+  return s;
 }
 
 function renderBieuMauList(){
   const listEl = document.getElementById('bieuMauList');
   const norm = (s) => String(s || 'ĐƠN').trim().toUpperCase();
-  const items = bieuMauCache.filter(it => norm(it.loai) === currentBieuMauLoai);
+  let items = bieuMauCache.filter(it => norm(it.loai) === currentBieuMauLoai);
+  if (currentBieuMauLoai === 'PHIẾU ĐÁNH GIÁ'){
+    items = items.filter(it => String(it.doiTuong || '').trim() === currentPhieuDoiTuong);
+  }
   if (!items.length){
     listEl.innerHTML = '<div class="empty-state">Chưa có biểu mẫu nào trong mục này.</div>';
     return;
   }
   listEl.innerHTML = items.map(it => `
     <div class="list-item">
-      <a href="${escapeHtml(it.link)}" target="_blank" rel="noopener">${escapeHtml(it.ten)}${it.doiTuong ? ` <span class="hint" style="display:inline;">(${escapeHtml(it.doiTuong)})</span>` : ''}</a>
-      ${isHrLoggedIn() ? `<button class="del-btn" onclick="deleteBieuMau('${escapeAttr(it.stt)}')">✕</button>` : ''}
+      <span class="list-item-name">${escapeHtml(it.ten)}${it.doiTuong && currentBieuMauLoai !== 'PHIẾU ĐÁNH GIÁ' ? ` <span class="hint" style="display:inline;">(${escapeHtml(it.doiTuong)})</span>` : ''}</span>
+      <div class="list-item-actions">
+        <a class="btn btn-outline btn-sm" href="${escapeHtml(it.link)}" target="_blank" rel="noopener">Xem</a>
+        <a class="btn btn-primary btn-sm" href="${escapeHtml(toDriveDownloadLink(it.link))}" target="_blank" rel="noopener" download>Tải xuống</a>
+        ${isHrLoggedIn() ? `<button class="del-btn" onclick="deleteBieuMau('${escapeAttr(it.stt)}')">✕</button>` : ''}
+      </div>
     </div>
   `).join('');
 }
