@@ -511,9 +511,9 @@
       <button class="close-x" onclick="closeModal('bieuMauModal')">✕</button>
     </div>
     <div class="tabs">
-      <button class="tab-btn active" data-loai="Đơn" onclick="switchBieuMauTab(this,'Đơn')">Đơn</button>
-      <button class="tab-btn" data-loai="Phiếu đánh giá" onclick="switchBieuMauTab(this,'Phiếu đánh giá')">Phiếu đánh giá</button>
-      <button class="tab-btn" data-loai="Khác" onclick="switchBieuMauTab(this,'Khác')">Khác</button>
+      <button class="tab-btn active" data-loai="ĐƠN" onclick="switchBieuMauTab(this,'ĐƠN')">Đơn</button>
+      <button class="tab-btn" data-loai="PHIẾU ĐÁNH GIÁ" onclick="switchBieuMauTab(this,'PHIẾU ĐÁNH GIÁ')">Phiếu đánh giá</button>
+      <button class="tab-btn" data-loai="KHÁC" onclick="switchBieuMauTab(this,'KHÁC')">Khác</button>
     </div>
     <div id="bieuMauList"></div>
 
@@ -521,10 +521,18 @@
       <h4>Thêm biểu mẫu mới (HR)</h4>
       <div class="field"><label>Tên biểu mẫu</label><input id="newBmTen" placeholder="VD: Đơn xin nghỉ phép"></div>
       <div class="field"><label>Link (Google Drive)</label><input id="newBmLink" placeholder="https://drive.google.com/..."></div>
+      <div class="field">
+        <label>Đối tượng áp dụng (không bắt buộc)</label>
+        <select id="newBmDoiTuong">
+          <option value="">-- Không có --</option>
+          <option value="Ứng viên">Ứng viên</option>
+          <option value="Nhân viên">Nhân viên</option>
+        </select>
+      </div>
       <div class="loai-select-wrap">
-        <button type="button" class="sel" id="loaiBtnDon" onclick="setNewBmLoai('Đơn')">Đơn</button>
-        <button type="button" id="loaiBtnPhieu" onclick="setNewBmLoai('Phiếu đánh giá')">Phiếu đánh giá</button>
-        <button type="button" id="loaiBtnKhac" onclick="setNewBmLoai('Khác')">Khác</button>
+        <button type="button" class="sel" id="loaiBtnDon" onclick="setNewBmLoai('ĐƠN')">Đơn</button>
+        <button type="button" id="loaiBtnPhieu" onclick="setNewBmLoai('PHIẾU ĐÁNH GIÁ')">Phiếu đánh giá</button>
+        <button type="button" id="loaiBtnKhac" onclick="setNewBmLoai('KHÁC')">Khác</button>
       </div>
       <button class="btn btn-primary" style="width:100%" onclick="addBieuMau()">+ Thêm biểu mẫu</button>
       <div class="form-msg" id="bmAdminMsg"></div>
@@ -553,8 +561,8 @@ const CONFIG = {
   API_URL: 'https://script.google.com/macros/s/AKfycbxvfY-E4STaIVM_rmy8ARpClzrJf3-OjZTVdS3QgSxIfJigWG0z8wSvyGwoOaI-RVBI/exec'
 };
 
-let currentBieuMauLoai = 'Đơn';
-let newBmLoai = 'Đơn';
+let currentBieuMauLoai = 'ĐƠN';
+let newBmLoai = 'ĐƠN';
 let bieuMauCache = [];
 
 /* ---------- Helpers ---------- */
@@ -920,14 +928,15 @@ function switchBieuMauTab(btn, loai){
 
 function renderBieuMauList(){
   const listEl = document.getElementById('bieuMauList');
-  const items = bieuMauCache.filter(it => (it.loai || 'Đơn') === currentBieuMauLoai);
+  const norm = (s) => String(s || 'ĐƠN').trim().toUpperCase();
+  const items = bieuMauCache.filter(it => norm(it.loai) === currentBieuMauLoai);
   if (!items.length){
     listEl.innerHTML = '<div class="empty-state">Chưa có biểu mẫu nào trong mục này.</div>';
     return;
   }
   listEl.innerHTML = items.map(it => `
     <div class="list-item">
-      <a href="${escapeHtml(it.link)}" target="_blank" rel="noopener">${escapeHtml(it.ten)}</a>
+      <a href="${escapeHtml(it.link)}" target="_blank" rel="noopener">${escapeHtml(it.ten)}${it.doiTuong ? ` <span class="hint" style="display:inline;">(${escapeHtml(it.doiTuong)})</span>` : ''}</a>
       ${isHrLoggedIn() ? `<button class="del-btn" onclick="deleteBieuMau('${escapeAttr(it.stt)}')">✕</button>` : ''}
     </div>
   `).join('');
@@ -935,14 +944,15 @@ function renderBieuMauList(){
 
 function setNewBmLoai(loai){
   newBmLoai = loai;
-  document.getElementById('loaiBtnDon').classList.toggle('sel', loai === 'Đơn');
-  document.getElementById('loaiBtnPhieu').classList.toggle('sel', loai === 'Phiếu đánh giá');
-  document.getElementById('loaiBtnKhac').classList.toggle('sel', loai === 'Khác');
+  document.getElementById('loaiBtnDon').classList.toggle('sel', loai === 'ĐƠN');
+  document.getElementById('loaiBtnPhieu').classList.toggle('sel', loai === 'PHIẾU ĐÁNH GIÁ');
+  document.getElementById('loaiBtnKhac').classList.toggle('sel', loai === 'KHÁC');
 }
 
 async function addBieuMau(){
   const ten = document.getElementById('newBmTen').value.trim();
   const link = document.getElementById('newBmLink').value.trim();
+  const doiTuong = document.getElementById('newBmDoiTuong').value;
   const msg = document.getElementById('bmAdminMsg');
   if (!ten || !link){
     msg.className = 'form-msg err';
@@ -952,13 +962,14 @@ async function addBieuMau(){
   try{
     const r = await callApi('addBieuMau', {
       token: sessionStorage.getItem('hr_token'),
-      data: { ten, link, loai: newBmLoai }
+      data: { ten, link, loai: newBmLoai, doiTuong }
     });
     if (r.ok){
       msg.className = 'form-msg ok';
       msg.textContent = 'Đã thêm biểu mẫu.';
       document.getElementById('newBmTen').value = '';
       document.getElementById('newBmLink').value = '';
+      document.getElementById('newBmDoiTuong').value = '';
       openBieuMau();
     } else {
       msg.className = 'form-msg err';
