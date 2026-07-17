@@ -142,8 +142,8 @@
   .field{margin-bottom:14px;}
   .field label{display:block; font-size:12.5px; font-weight:600; color:var(--blue); margin-bottom:5px;}
   .field input, .field select{
-    width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line);
-    font-family:inherit; font-size:14px; background:var(--cream);
+    width:100%; padding:11px 12px; border-radius:10px; border:1.5px solid var(--line);
+    font-family:inherit; font-size:16px; background:var(--cream);
   }
   .field input:focus, .field select:focus{ outline:none; border-color:var(--orange); }
   .field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
@@ -153,11 +153,15 @@
   .form-msg.ok{display:block; background:rgba(46,160,67,0.12); color:#1e7a30;}
   .form-msg.err{display:block; background:rgba(220,53,69,0.1); color:#c0392b;}
 
-  .tabs{display:flex; gap:6px; margin-bottom:16px; border-bottom:1px solid var(--line);}
+  .tabs{
+    display:flex; gap:6px; margin-bottom:16px; border-bottom:1px solid var(--line);
+    overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
   .tab-btn{
-    border:none; background:none; padding:9px 14px; font-family:inherit;
+    border:none; background:none; padding:10px 14px; font-family:inherit;
     font-size:13.5px; font-weight:600; color:var(--muted); cursor:pointer;
-    border-bottom:2.5px solid transparent; margin-bottom:-1px;
+    border-bottom:2.5px solid transparent; margin-bottom:-1px; white-space:nowrap; flex-shrink:0;
   }
   .tab-btn.active{color:var(--orange); border-color:var(--orange);}
 
@@ -232,37 +236,147 @@
   .status-msg.error{display:block; background:rgba(220,53,69,0.1); color:#c0392b;}
 
   .field textarea{
-    width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line);
-    font-family:inherit; font-size:14px; background:var(--cream); resize:vertical; min-height:90px;
+    width:100%; padding:11px 12px; border-radius:10px; border:1.5px solid var(--line);
+    font-family:inherit; font-size:16px; background:var(--cream); resize:vertical; min-height:90px;
   }
   .field textarea:focus{ outline:none; border-color:var(--orange); }
 
-  .khoi-group{margin-bottom:24px;}
+  .khoi-group{margin-bottom:30px;}
   .khoi-group:last-child{margin-bottom:0;}
   .khoi-title{
-    font-size:12.5px; letter-spacing:.6px; text-transform:uppercase;
-    color:var(--orange); font-weight:800; margin:0 0 12px; padding-bottom:8px;
-    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:9px;
+    font-size:12px; letter-spacing:1.2px; text-transform:uppercase;
+    color:var(--blue); font-weight:800; margin:0 0 14px;
   }
-  .contact-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;}
+  .khoi-title::before{
+    content:''; width:7px; height:7px; border-radius:2px;
+    background:var(--orange); flex-shrink:0;
+  }
+  .khoi-title::after{
+    content:''; flex:1; height:1px; background:var(--line);
+  }
+
+  .contact-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:14px;}
   @media (max-width:640px){ .contact-grid{grid-template-columns:1fr;} }
+
   .contact-card{
-    border:1px solid var(--line); border-radius:14px; padding:14px 16px; background:var(--cream);
+    background:#fff; border:1px solid var(--line); border-radius:16px;
+    padding:0; overflow:hidden; transition:.15s;
   }
-  .contact-card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:6px;}
-  .contact-pb{font-weight:700; color:var(--blue); font-size:14px;}
+  .contact-card:hover{ box-shadow:0 8px 20px rgba(3,44,125,0.07); border-color:#e2d6c0; }
+
+  .contact-card-head{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:14px 16px; background:var(--cream); border-bottom:1px solid var(--line);
+  }
+  .contact-pb-wrap{display:flex; align-items:center; gap:10px; min-width:0;}
+  .contact-pb-icon{
+    width:32px; height:32px; border-radius:10px; flex-shrink:0;
+    background:rgba(243,112,33,0.14); color:var(--orange);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .contact-pb{font-weight:700; color:var(--blue); font-size:14.5px; line-height:1.3;}
   .contact-card-actions{display:flex; gap:6px; flex-shrink:0;}
   .icon-btn-sm{
-    border:none; width:26px; height:26px; border-radius:7px; cursor:pointer;
+    border:none; width:26px; height:26px; border-radius:8px; cursor:pointer;
     font-size:12.5px; display:inline-flex; align-items:center; justify-content:center;
+    transition:.15s;
   }
   .icon-btn-sm.edit{background:rgba(3,44,125,0.08); color:var(--blue);}
   .icon-btn-sm.edit:hover{background:rgba(3,44,125,0.16);}
   .icon-btn-sm.del{background:rgba(220,53,69,0.1); color:#c0392b;}
   .icon-btn-sm.del:hover{background:rgba(220,53,69,0.18);}
-  .contact-ul{margin:4px 0 0; padding-left:18px;}
-  .contact-ul li{font-size:13px; color:var(--text); line-height:1.65;}
-  .contact-line{margin:4px 0 0; font-size:13px; color:var(--text); font-weight:600;}
+
+  .contact-body{padding:6px 8px;}
+  .contact-row{
+    display:flex; align-items:center; gap:11px; padding:9px 8px;
+    border-radius:10px; text-decoration:none; color:inherit; transition:.15s;
+  }
+  a.contact-row:hover{ background:rgba(243,112,33,0.07); }
+  .contact-row-icon{
+    width:30px; height:30px; border-radius:9px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(3,44,125,0.07); color:var(--blue);
+  }
+  .contact-row.tel .contact-row-icon{ background:rgba(46,160,67,0.12); color:#1e7a30; }
+  .contact-row.mail .contact-row-icon{ background:rgba(11,63,160,0.1); color:var(--blue-light); }
+  .contact-row-text{min-width:0; flex:1;}
+  .contact-row-label{display:block; font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.4px;}
+  .contact-row-value{display:block; font-size:13.5px; color:var(--text); font-weight:700; margin-top:1px;}
+
+  .contact-person{
+    display:flex; align-items:center; gap:11px; padding:9px 8px; border-radius:10px;
+  }
+  .avatar{
+    width:30px; height:30px; border-radius:50%; flex-shrink:0;
+    background:linear-gradient(135deg, var(--blue), var(--blue-light));
+    color:#fff; font-size:12.5px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .contact-person-info{min-width:0; flex:1;}
+  .contact-person-label{font-size:11px; color:var(--muted); font-weight:600;}
+  .contact-person-name{font-size:13.5px; color:var(--text); font-weight:600; line-height:1.4;}
+  .contact-person-name .tag{
+    display:inline-block; font-size:10.5px; font-weight:700; color:var(--orange);
+    background:rgba(243,112,33,0.12); padding:1px 7px; border-radius:999px; margin-left:6px;
+  }
+  .contact-phone-btn{
+    flex-shrink:0; font-size:12.5px; font-weight:700; color:var(--blue);
+    text-decoration:none; background:rgba(3,44,125,0.07); padding:6px 10px; border-radius:999px;
+    transition:.15s; white-space:nowrap;
+  }
+  .contact-phone-btn:hover{ background:var(--blue); color:#fff; }
+  .contact-line{margin:4px 8px 4px; font-size:13px; color:var(--text); font-weight:600;}
+
+  /* ============================================================
+     DI ĐỘNG — Portal chủ yếu dùng trên điện thoại nên ưu tiên tối ưu ở đây
+     ============================================================ */
+  @media (max-width:640px){
+    .topbar{ padding:14px 16px; gap:10px; }
+    .brand{ gap:9px; }
+    .brand .mark{ width:36px; height:36px; font-size:15px; border-radius:10px; }
+    .brand h1{ font-size:15.5px; }
+    .brand span{ font-size:10.5px; }
+    #hrStatusBtn{ padding:8px 13px; font-size:12.5px; }
+
+    main{ padding:22px 16px 90px; }
+    .intro h2{ font-size:21px; }
+    .intro p{ font-size:13.5px; }
+
+    .grid{ gap:14px; }
+    .card{ padding:18px; border-radius:16px; }
+    .card h3{ font-size:16px; }
+
+    .btn{ padding:12px 16px; font-size:14px; min-height:46px; }
+
+    /* Modal kiểu bottom-sheet: trượt lên từ đáy màn hình, quen thuộc như app native */
+    .overlay{ padding:0; align-items:flex-end; }
+    .modal{
+      max-width:100% !important; width:100%; max-height:calc(100vh - 34px);
+      border-radius:22px 22px 0 0; padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    }
+    .modal-head h3{ font-size:17.5px; }
+    .modal-head p{ font-size:12.5px; }
+    .close-x{ width:36px; height:36px; font-size:15px; }
+
+    .field-row{ grid-template-columns:1fr; gap:10px; }
+
+    .tab-btn{ padding:10px 12px; font-size:13px; }
+    .sub-tabs button{ padding:10px 8px; font-size:12.5px; }
+
+    .list-item{ padding:12px; }
+    .icon-btn{ width:42px; height:42px; }
+    .btn-sm{ padding:9px 14px; min-height:42px; }
+
+    .contact-grid{ grid-template-columns:1fr; gap:12px; }
+    .contact-card-head{ padding:13px 14px; }
+    .icon-btn-sm{ width:30px; height:30px; }
+    .contact-row, .contact-person{ padding:10px 6px; }
+    .avatar{ width:32px; height:32px; }
+    .contact-phone-btn{ padding:8px 12px; }
+
+    .loai-select-wrap button{ padding:10px 6px; font-size:12px; }
+  }
 </style>
 </head>
 <body>
@@ -1178,21 +1292,108 @@ async function openDanhBa(){
   }
 }
 
+function extractPhone(text){
+  const m = String(text || '').match(/0\d[\d.\s]{7,12}\d/);
+  if (!m) return '';
+  return m[0].replace(/[.\s]/g, '');
+}
+
+function formatPhone(p){
+  if (!p) return '';
+  if (p.length === 10) return p.slice(0, 4) + ' ' + p.slice(4, 7) + ' ' + p.slice(7);
+  if (p.length === 11) return p.slice(0, 4) + ' ' + p.slice(4, 7) + ' ' + p.slice(7);
+  return p;
+}
+
+function personInitial(name){
+  const cleaned = String(name || '').replace(/^(Ms\.|Mr\.|Mrs\.)\s*/i, '').trim();
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  return parts.length ? parts[parts.length - 1][0].toUpperCase() : '?';
+}
+
+function parsePersonPart(text){
+  let t = String(text || '').trim();
+  if (!t) return null;
+
+  let label = '';
+  const colonIdx = t.indexOf(':');
+  if (colonIdx !== -1){
+    label = t.slice(0, colonIdx).trim();
+    t = t.slice(colonIdx + 1).trim();
+  }
+
+  let note = '';
+  const noteMatch = t.match(/\(([^)]+)\)/);
+  if (noteMatch){
+    note = noteMatch[1];
+    t = t.replace(noteMatch[0], '').trim();
+  }
+
+  const phone = extractPhone(t);
+  let name = phone ? t.replace(phone, '') : t;
+  name = name.replace(/[-–]\s*$/, '').replace(/^[-–]\s*/, '').trim();
+
+  if (!name && !phone) return null;
+  return { label, name, note, phone };
+}
+
+function parseContactLine(line){
+  const t = String(line || '').trim();
+  if (!t) return [];
+
+  if (/^hotline\s*:/i.test(t)){
+    const phone = extractPhone(t);
+    return phone ? [{ type: 'hotline', phone }] : [{ type: 'text', text: t }];
+  }
+  if (/^email\s*:/i.test(t)){
+    const email = t.split(':').slice(1).join(':').trim();
+    return email ? [{ type: 'email', email }] : [{ type: 'text', text: t }];
+  }
+
+  const parts = t.split('/').map(p => parsePersonPart(p)).filter(Boolean);
+  if (!parts.length) return [{ type: 'text', text: t }];
+  return parts.map(p => Object.assign({ type: 'person' }, p));
+}
+
 function renderContactContent(text){
-  const lines = String(text || '').split('\n').map(l => l.trim()).filter(l => l);
-  let html = '';
-  let inList = false;
-  lines.forEach(line => {
-    if (line.startsWith('*')){
-      if (!inList){ html += '<ul class="contact-ul">'; inList = true; }
-      html += `<li>${escapeHtml(line.replace(/^\*\s*/, ''))}</li>`;
-    } else {
-      if (inList){ html += '</ul>'; inList = false; }
-      html += `<p class="contact-line">${escapeHtml(line)}</p>`;
+  const lines = String(text || '').split('\n').map(l => l.trim().replace(/^\*\s*/, '')).filter(l => l);
+  const rows = [];
+  lines.forEach(line => rows.push(...parseContactLine(line)));
+
+  return `<div class="contact-body">${rows.map(row => {
+    if (row.type === 'hotline'){
+      return `
+        <a class="contact-row tel" href="tel:${escapeHtml(row.phone)}">
+          <span class="contact-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.5 21 3 13.5 3 4.6c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+          <span class="contact-row-text">
+            <span class="contact-row-label">Hotline</span>
+            <span class="contact-row-value">${escapeHtml(formatPhone(row.phone))}</span>
+          </span>
+        </a>`;
     }
-  });
-  if (inList) html += '</ul>';
-  return html;
+    if (row.type === 'email'){
+      return `
+        <a class="contact-row mail" href="mailto:${escapeHtml(row.email)}">
+          <span class="contact-row-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+          <span class="contact-row-text">
+            <span class="contact-row-label">Email</span>
+            <span class="contact-row-value">${escapeHtml(row.email)}</span>
+          </span>
+        </a>`;
+    }
+    if (row.type === 'person'){
+      return `
+        <div class="contact-person">
+          <span class="avatar">${escapeHtml(personInitial(row.name))}</span>
+          <span class="contact-person-info">
+            ${row.label ? `<span class="contact-person-label">${escapeHtml(row.label)}</span>` : ''}
+            <span class="contact-person-name">${escapeHtml(row.name || '—')}${row.note ? `<span class="tag">${escapeHtml(row.note)}</span>` : ''}</span>
+          </span>
+          ${row.phone ? `<a class="contact-phone-btn" href="tel:${escapeHtml(row.phone)}">${escapeHtml(formatPhone(row.phone))}</a>` : ''}
+        </div>`;
+    }
+    return `<p class="contact-line">${escapeHtml(row.text)}</p>`;
+  }).join('')}</div>`;
 }
 
 function renderDanhBaList(){
@@ -1215,7 +1416,10 @@ function renderDanhBaList(){
         ${g.items.map(it => `
           <div class="contact-card">
             <div class="contact-card-head">
-              <span class="contact-pb">${escapeHtml(it.phongBan)}</span>
+              <span class="contact-pb-wrap">
+                <span class="contact-pb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 21V7l8-4 8 4v14" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 21v-6h6v6M9 11h.01M15 11h.01M9 15h.01M15 15h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+                <span class="contact-pb">${escapeHtml(it.phongBan)}</span>
+              </span>
               ${isHrLoggedIn() ? `
                 <div class="contact-card-actions">
                   <button class="icon-btn-sm edit" onclick="editDanhBa('${escapeAttr(it.stt)}')" title="Sửa">✎</button>
