@@ -132,7 +132,7 @@
     box-shadow:0 20px 60px rgba(0,0,0,0.25);
   }
   .modal.wide{max-width:720px;}
-  .modal-scroll{ max-height:88vh; overflow-y:auto; padding:0 28px 28px; }
+  .modal-scroll{ max-height:88vh; overflow-y:auto; overflow-x:hidden; padding:0 28px 28px; }
   .modal-head{
     display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;
     position:sticky; top:0; padding:28px 0 12px;
@@ -162,6 +162,7 @@
   }
   .field input:focus, .field select:focus{ outline:none; border-color:var(--orange); }
   .field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .field-row .field{min-width:0;}
   @media (max-width:480px){ .field-row{grid-template-columns:1fr;} }
 
   .form-msg{font-size:13px; margin-top:10px; padding:10px 12px; border-radius:10px; display:none;}
