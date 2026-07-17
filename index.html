@@ -230,6 +230,39 @@
   .status-msg{font-size:13px; margin-top:10px; padding:10px 12px; border-radius:10px; display:none;}
   .status-msg.success{display:block; background:rgba(46,160,67,0.12); color:#1e7a30;}
   .status-msg.error{display:block; background:rgba(220,53,69,0.1); color:#c0392b;}
+
+  .field textarea{
+    width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line);
+    font-family:inherit; font-size:14px; background:var(--cream); resize:vertical; min-height:90px;
+  }
+  .field textarea:focus{ outline:none; border-color:var(--orange); }
+
+  .khoi-group{margin-bottom:24px;}
+  .khoi-group:last-child{margin-bottom:0;}
+  .khoi-title{
+    font-size:12.5px; letter-spacing:.6px; text-transform:uppercase;
+    color:var(--orange); font-weight:800; margin:0 0 12px; padding-bottom:8px;
+    border-bottom:1px solid var(--line);
+  }
+  .contact-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;}
+  @media (max-width:640px){ .contact-grid{grid-template-columns:1fr;} }
+  .contact-card{
+    border:1px solid var(--line); border-radius:14px; padding:14px 16px; background:var(--cream);
+  }
+  .contact-card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:6px;}
+  .contact-pb{font-weight:700; color:var(--blue); font-size:14px;}
+  .contact-card-actions{display:flex; gap:6px; flex-shrink:0;}
+  .icon-btn-sm{
+    border:none; width:26px; height:26px; border-radius:7px; cursor:pointer;
+    font-size:12.5px; display:inline-flex; align-items:center; justify-content:center;
+  }
+  .icon-btn-sm.edit{background:rgba(3,44,125,0.08); color:var(--blue);}
+  .icon-btn-sm.edit:hover{background:rgba(3,44,125,0.16);}
+  .icon-btn-sm.del{background:rgba(220,53,69,0.1); color:#c0392b;}
+  .icon-btn-sm.del:hover{background:rgba(220,53,69,0.18);}
+  .contact-ul{margin:4px 0 0; padding-left:18px;}
+  .contact-ul li{font-size:13px; color:var(--text); line-height:1.65;}
+  .contact-line{margin:4px 0 0; font-size:13px; color:var(--text); font-weight:600;}
 </style>
 </head>
 <body>
@@ -323,10 +356,9 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 6l8 7 8-7" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
       </div>
       <h3>Thông tin liên hệ</h3>
-      <span class="badge-soon">Đang phát triển</span>
-      <p>Danh bạ liên hệ các phòng ban, bộ phận trong công ty sẽ sớm ra mắt tại đây.</p>
+      <p>Danh bạ liên hệ các phòng ban, bộ phận trong công ty.</p>
       <div class="actions">
-        <button class="btn btn-ghost" onclick="openModal('soonModal')">Xem trước</button>
+        <button class="btn btn-primary" onclick="openDanhBa()">Xem danh bạ</button>
       </div>
     </div>
 
@@ -572,6 +604,34 @@
   </div>
 </div>
 
+<!-- ===================== MODAL: DANH BẠ LIÊN HỆ ===================== -->
+<div class="overlay" id="danhBaModal">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div>
+        <h3>Danh bạ liên hệ</h3>
+        <p>Thông tin liên hệ các phòng ban, bộ phận trong công ty.</p>
+      </div>
+      <button class="close-x" onclick="resetDanhBaForm(); closeModal('danhBaModal')">✕</button>
+    </div>
+    <div id="danhBaList"></div>
+
+    <div class="admin-add" id="danhBaAdmin" style="display:none;">
+      <h4>Thêm / sửa liên hệ (HR)</h4>
+      <div class="field"><label>Khối</label><input id="dbKhoi" placeholder="VD: Khối Kinh Doanh"></div>
+      <div class="field"><label>Phòng ban / Bộ phận</label><input id="dbPhongBan" placeholder="VD: Cửa hàng Tuệ Tĩnh"></div>
+      <div class="field">
+        <label>Nội dung</label>
+        <textarea id="dbNoiDung" placeholder="Mỗi dòng bắt đầu bằng dấu * sẽ hiển thị dạng gạch đầu dòng, VD:&#10;* Hotline: 0901234567&#10;* Quản lý: Ms. A - 0901234567"></textarea>
+        <div class="hint">Mỗi dòng bắt đầu bằng * sẽ hiển thị dạng gạch đầu dòng.</div>
+      </div>
+      <button class="btn btn-primary" style="width:100%" id="dbSubmitBtn" onclick="submitDanhBa()">+ Thêm liên hệ</button>
+      <button class="btn btn-ghost" style="width:100%; margin-top:8px;" id="dbCancelBtn" onclick="resetDanhBaForm()" hidden>Hủy sửa</button>
+      <div class="form-msg" id="dbAdminMsg"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== MODAL: COMING SOON ===================== -->
 <div class="overlay" id="soonModal">
   <div class="modal">
@@ -590,7 +650,7 @@
    CẤU HÌNH — dán URL Web App (Apps Script) sau khi deploy Code.gs
    ============================================================ */
 const CONFIG = {
-  API_URL: 'https://script.google.com/macros/s/AKfycbxL-i6OnSlWp8KtnUXWj0Y0XqSya6Yt9n3Z8TJGqryqmaGn-kvJrSUpDj5aS1e5nLQS/exec'
+  API_URL: 'https://script.google.com/macros/s/AKfycbwH-ChywmHUmH57_CfknHSMf9KTSKHFZfuuXw_WJwRnHoXNzzgukXk0tuOsBjPwWJrz/exec'
 };
 
 let currentBieuMauLoai = 'ĐƠN';
@@ -851,10 +911,12 @@ function refreshHrUi(){
     btn.textContent = 'HR: Đăng xuất';
     btn.classList.add('active');
     document.getElementById('bieuMauAdmin').style.display = 'block';
+    document.getElementById('danhBaAdmin').style.display = 'block';
   } else {
     btn.textContent = 'Đăng nhập HR';
     btn.classList.remove('active');
     document.getElementById('bieuMauAdmin').style.display = 'none';
+    document.getElementById('danhBaAdmin').style.display = 'none';
   }
 }
 
@@ -1088,6 +1150,161 @@ async function deleteBieuMau(stt){
       stt
     });
     if (r.ok){ openBieuMau(); }
+    else { alert(r.error || 'Không xóa được'); }
+  }catch(err){
+    alert('Lỗi kết nối: ' + err.message);
+  }
+}
+
+/* ---------- Danh bạ liên hệ ---------- */
+let danhBaCache = [];
+let editingDanhBaStt = null;
+
+async function openDanhBa(){
+  openModal('danhBaModal');
+  refreshHrUi();
+  const listEl = document.getElementById('danhBaList');
+  listEl.innerHTML = '<div class="empty-state">Đang tải...</div>';
+  try{
+    const r = await callApi('getDanhBa');
+    if (r.ok){
+      danhBaCache = r.items || [];
+      renderDanhBaList();
+    } else {
+      listEl.innerHTML = '<div class="empty-state">' + (r.error || 'Không tải được dữ liệu') + '</div>';
+    }
+  }catch(err){
+    listEl.innerHTML = '<div class="empty-state">Lỗi kết nối: ' + err.message + '</div>';
+  }
+}
+
+function renderContactContent(text){
+  const lines = String(text || '').split('\n').map(l => l.trim()).filter(l => l);
+  let html = '';
+  let inList = false;
+  lines.forEach(line => {
+    if (line.startsWith('*')){
+      if (!inList){ html += '<ul class="contact-ul">'; inList = true; }
+      html += `<li>${escapeHtml(line.replace(/^\*\s*/, ''))}</li>`;
+    } else {
+      if (inList){ html += '</ul>'; inList = false; }
+      html += `<p class="contact-line">${escapeHtml(line)}</p>`;
+    }
+  });
+  if (inList) html += '</ul>';
+  return html;
+}
+
+function renderDanhBaList(){
+  const listEl = document.getElementById('danhBaList');
+  if (!danhBaCache.length){
+    listEl.innerHTML = '<div class="empty-state">Chưa có thông tin liên hệ.</div>';
+    return;
+  }
+  const groups = [];
+  const groupMap = {};
+  danhBaCache.forEach(item => {
+    const k = item.khoi || 'Khác';
+    if (!groupMap[k]){ groupMap[k] = { khoi: k, items: [] }; groups.push(groupMap[k]); }
+    groupMap[k].items.push(item);
+  });
+  listEl.innerHTML = groups.map(g => `
+    <div class="khoi-group">
+      <h4 class="khoi-title">${escapeHtml(g.khoi)}</h4>
+      <div class="contact-grid">
+        ${g.items.map(it => `
+          <div class="contact-card">
+            <div class="contact-card-head">
+              <span class="contact-pb">${escapeHtml(it.phongBan)}</span>
+              ${isHrLoggedIn() ? `
+                <div class="contact-card-actions">
+                  <button class="icon-btn-sm edit" onclick="editDanhBa('${escapeAttr(it.stt)}')" title="Sửa">✎</button>
+                  <button class="icon-btn-sm del" onclick="deleteDanhBa('${escapeAttr(it.stt)}')" title="Xóa">✕</button>
+                </div>` : ''}
+            </div>
+            ${renderContactContent(it.noiDung)}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function editDanhBa(stt){
+  const item = danhBaCache.find(x => String(x.stt) === String(stt));
+  if (!item) return;
+  editingDanhBaStt = stt;
+  document.getElementById('dbKhoi').value = item.khoi || '';
+  document.getElementById('dbPhongBan').value = item.phongBan || '';
+  document.getElementById('dbNoiDung').value = item.noiDung || '';
+  document.getElementById('dbSubmitBtn').textContent = 'Lưu thay đổi';
+  document.getElementById('dbCancelBtn').hidden = false;
+  document.getElementById('danhBaAdmin').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetDanhBaForm(){
+  editingDanhBaStt = null;
+  const khoiEl = document.getElementById('dbKhoi');
+  const pbEl = document.getElementById('dbPhongBan');
+  const ndEl = document.getElementById('dbNoiDung');
+  const btnEl = document.getElementById('dbSubmitBtn');
+  const cancelEl = document.getElementById('dbCancelBtn');
+  const msgEl = document.getElementById('dbAdminMsg');
+  if (khoiEl) khoiEl.value = '';
+  if (pbEl) pbEl.value = '';
+  if (ndEl) ndEl.value = '';
+  if (btnEl) btnEl.textContent = '+ Thêm liên hệ';
+  if (cancelEl) cancelEl.hidden = true;
+  if (msgEl) msgEl.className = 'form-msg';
+}
+
+async function submitDanhBa(){
+  const khoi = document.getElementById('dbKhoi').value.trim();
+  const phongBan = document.getElementById('dbPhongBan').value.trim();
+  const noiDung = document.getElementById('dbNoiDung').value.trim();
+  const msg = document.getElementById('dbAdminMsg');
+  if (!phongBan){
+    msg.className = 'form-msg err';
+    msg.textContent = 'Vui lòng nhập tên phòng ban / bộ phận.';
+    return;
+  }
+  try{
+    let r;
+    if (editingDanhBaStt){
+      r = await callApi('updateDanhBa', {
+        token: sessionStorage.getItem('hr_token'),
+        stt: editingDanhBaStt,
+        data: { khoi, phongBan, noiDung }
+      });
+    } else {
+      r = await callApi('addDanhBa', {
+        token: sessionStorage.getItem('hr_token'),
+        data: { khoi, phongBan, noiDung }
+      });
+    }
+    if (r.ok){
+      msg.className = 'form-msg ok';
+      msg.textContent = editingDanhBaStt ? 'Đã lưu thay đổi.' : 'Đã thêm liên hệ.';
+      resetDanhBaForm();
+      openDanhBa();
+    } else {
+      msg.className = 'form-msg err';
+      msg.textContent = r.error || 'Có lỗi xảy ra.';
+    }
+  }catch(err){
+    msg.className = 'form-msg err';
+    msg.textContent = 'Lỗi kết nối: ' + err.message;
+  }
+}
+
+async function deleteDanhBa(stt){
+  if (!confirm('Xóa thông tin liên hệ này?')) return;
+  try{
+    const r = await callApi('deleteDanhBa', {
+      token: sessionStorage.getItem('hr_token'),
+      stt
+    });
+    if (r.ok){ openDanhBa(); }
     else { alert(r.error || 'Không xóa được'); }
   }catch(err){
     alert('Lỗi kết nối: ' + err.message);
