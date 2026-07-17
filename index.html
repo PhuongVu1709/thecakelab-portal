@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Cake Lab Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#F37021;
+    --orange-dark:#d85e14;
+    --blue:#032C7D;
+    --blue-light:#0b3fa0;
+    --cream:#FCF6ED;
+    --card:#ffffff;
+    --line:#ece3d4;
+    --text:#2a2420;
+    --muted:#7a7168;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Be Vietnam Pro', system-ui, sans-serif;
+    background:var(--cream);
+    color:var(--text);
+    min-height:100vh;
+  }
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:22px 32px;
+    border-bottom:1px solid var(--line);
+    background:var(--cream);
+    position:sticky;
+    top:0;
+    z-index:20;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand .mark{
+    width:42px;height:42px;border-radius:12px;
+    background:linear-gradient(135deg, var(--orange), var(--orange-dark));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:18px;
+    box-shadow:0 4px 10px rgba(243,112,33,0.35);
+  }
+  .brand h1{font-size:19px;margin:0;color:var(--blue);font-weight:800;letter-spacing:.2px;}
+  .brand span{font-size:12px;color:var(--muted);display:block;margin-top:1px;}
+
+  #hrStatusBtn{
+    border:1.5px solid var(--blue);
+    background:transparent;
+    color:var(--blue);
+    padding:9px 18px;
+    border-radius:999px;
+    font-weight:600;
+    font-size:13.5px;
+    cursor:pointer;
+    transition:.15s;
+    font-family:inherit;
+  }
+  #hrStatusBtn:hover{background:var(--blue); color:#fff;}
+  #hrStatusBtn.active{background:var(--blue); color:#fff;}
+
+  main{max-width:1080px; margin:0 auto; padding:40px 24px 80px;}
+  .intro{margin-bottom:30px;}
+  .intro h2{color:var(--blue); font-size:26px; margin:0 0 6px;}
+  .intro p{color:var(--muted); margin:0; font-size:14.5px;}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:20px;
+  }
+  @media (max-width:720px){ .grid{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:24px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    transition:.15s;
+  }
+  .card:hover{ box-shadow:0 10px 24px rgba(3,44,125,0.08); transform:translateY(-2px); }
+  .card .icon{
+    width:46px;height:46px;border-radius:13px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(243,112,33,0.12);
+    color:var(--orange);
+  }
+  .card h3{margin:0; font-size:17px; color:var(--blue);}
+  .card p{margin:0; font-size:13.5px; color:var(--muted); line-height:1.5;}
+  .card .actions{display:flex; flex-direction:column; gap:8px; margin-top:auto;}
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    border:none; border-radius:11px; padding:11px 16px;
+    font-family:inherit; font-weight:600; font-size:13.5px;
+    cursor:pointer; text-decoration:none; transition:.15s;
+  }
+  .btn-primary{background:var(--orange); color:#fff;}
+  .btn-primary:hover{background:var(--orange-dark);}
+  .btn-outline{background:transparent; color:var(--blue); border:1.5px solid var(--blue);}
+  .btn-outline:hover{background:var(--blue); color:#fff;}
+  .btn-ghost{background:rgba(3,44,125,0.06); color:var(--blue);}
+  .btn-ghost:hover{background:rgba(3,44,125,0.12);}
+  .btn[disabled]{opacity:.5; cursor:not-allowed;}
+
+  .badge-soon{
+    font-size:11px; font-weight:700; color:var(--orange);
+    background:rgba(243,112,33,0.12); padding:3px 10px; border-radius:999px;
+    align-self:flex-start;
+  }
+
+  /* Modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(3,20,50,0.55);
+    display:none; align-items:center; justify-content:center;
+    padding:20px; z-index:100;
+  }
+  .overlay.open{display:flex;}
+  .modal{
+    background:#fff; border-radius:20px; width:100%; max-width:560px;
+    max-height:88vh; overflow-y:auto; padding:28px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal.wide{max-width:720px;}
+  .modal-head{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;}
+  .modal-head h3{margin:0; color:var(--blue); font-size:19px;}
+  .modal-head p{margin:4px 0 0; font-size:13px; color:var(--muted);}
+  .close-x{
+    border:none; background:rgba(3,44,125,0.08); color:var(--blue);
+    width:32px;height:32px;border-radius:50%; cursor:pointer; font-size:16px; line-height:1;
+    flex-shrink:0;
+  }
+
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12.5px; font-weight:600; color:var(--blue); margin-bottom:5px;}
+  .field input, .field select{
+    width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line);
+    font-family:inherit; font-size:14px; background:var(--cream);
+  }
+  .field input:focus, .field select:focus{ outline:none; border-color:var(--orange); }
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  @media (max-width:480px){ .field-row{grid-template-columns:1fr;} }
+
+  .form-msg{font-size:13px; margin-top:10px; padding:10px 12px; border-radius:10px; display:none;}
+  .form-msg.ok{display:block; background:rgba(46,160,67,0.12); color:#1e7a30;}
+  .form-msg.err{display:block; background:rgba(220,53,69,0.1); color:#c0392b;}
+
+  .tabs{display:flex; gap:6px; margin-bottom:16px; border-bottom:1px solid var(--line);}
+  .tab-btn{
+    border:none; background:none; padding:9px 14px; font-family:inherit;
+    font-size:13.5px; font-weight:600; color:var(--muted); cursor:pointer;
+    border-bottom:2.5px solid transparent; margin-bottom:-1px;
+  }
+  .tab-btn.active{color:var(--orange); border-color:var(--orange);}
+
+  .list-item{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 14px; border:1px solid var(--line); border-radius:12px; margin-bottom:8px;
+  }
+  .list-item a{color:var(--blue); font-weight:600; font-size:14px; text-decoration:none;}
+  .list-item a:hover{text-decoration:underline;}
+  .list-item .del-btn{
+    border:none; background:rgba(220,53,69,0.1); color:#c0392b;
+    width:28px;height:28px;border-radius:8px; cursor:pointer; font-size:13px; flex-shrink:0;
+  }
+  .empty-state{text-align:center; color:var(--muted); font-size:13.5px; padding:24px 0;}
+  .admin-add{
+    border-top:1px dashed var(--line); margin-top:16px; padding-top:16px;
+  }
+  .admin-add h4{margin:0 0 10px; font-size:13px; color:var(--blue);}
+  .loai-select-wrap{display:flex; gap:8px; margin-bottom:14px;}
+  .loai-select-wrap button{
+    flex:1; padding:8px; border-radius:9px; border:1.5px solid var(--line);
+    background:var(--cream); font-family:inherit; font-size:12.5px; font-weight:600;
+    color:var(--muted); cursor:pointer;
+  }
+  .loai-select-wrap button.sel{border-color:var(--orange); color:var(--orange); background:rgba(243,112,33,0.08);}
+
+  footer{text-align:center; padding:20px; font-size:12px; color:var(--muted);}
+
+  .ns-h4{
+    font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    color:var(--blue); font-weight:700; margin:22px 0 12px;
+  }
+  .ns-h4:first-child{margin-top:4px;}
+  .notice-box{
+    background:rgba(3,44,125,0.06); border-left:4px solid var(--blue);
+    border-radius:12px; padding:16px 18px; margin-bottom:6px;
+  }
+  .notice-box p{margin:0 0 8px; font-size:13px; font-weight:700; color:var(--blue);}
+  .notice-box ul{margin:0; padding-left:18px;}
+  .notice-box li{font-size:12.5px; color:var(--text); margin-bottom:6px; line-height:1.5;}
+  .notice-box li:last-child{margin-bottom:0;}
+  .field-error{font-size:11.5px; color:#c0392b; margin-top:5px; display:none;}
+  .field-error.show{display:block;}
+  .hint{font-size:11.5px; color:var(--muted); margin-top:4px;}
+  .status-msg{font-size:13px; margin-top:10px; padding:10px 12px; border-radius:10px; display:none;}
+  .status-msg.success{display:block; background:rgba(46,160,67,0.12); color:#1e7a30;}
+  .status-msg.error{display:block; background:rgba(220,53,69,0.1); color:#c0392b;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="mark">TCL</div>
+    <div>
+      <h1>The Cake Lab Portal</h1>
+      <span>Cổng thông tin nội bộ nhân sự</span>
+    </div>
+  </div>
+  <button id="hrStatusBtn" onclick="onHrButtonClick()">Đăng nhập HR</button>
+</div>
+
+<main>
+  <div class="intro">
+    <h2>Xin chào 👋</h2>
+    <p>Các mục dưới đây sẽ cung cấp các thông tin cần thiết đối với nhân viên trong quá trình làm việc tại The Cake Lab.</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- 1. Thông tin nhân sự -->
+    <div class="card">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <h3>Thông tin nhân sự</h3>
+      <p>Điền thông tin cá nhân khi vào làm và thông tin phục vụ đóng bảo hiểm xã hội (BHXH).</p>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="openNhanSuForm()">Điền thông tin nhân sự</button>
+        <button class="btn btn-outline" onclick="openModal('bhxhModal')">Điền thông tin BHXH</button>
+      </div>
+    </div>
+
+    <!-- 2. Quy định -->
+    <div class="card">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 11h6M9 15h6M9 7h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <h3>Quy định</h3>
+      <span class="badge-soon">Đang phát triển</span>
+      <p>Mục tra cứu các Quy định nội bộ của công ty sẽ sớm ra mắt tại đây.</p>
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="openModal('soonModal')">Xem trước</button>
+      </div>
+    </div>
+
+    <!-- 3. Biểu mẫu -->
+    <div class="card">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 17h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <h3>Biểu mẫu</h3>
+      <p>Các loại đơn, phiếu đánh giá và biểu mẫu khác đang được sử dụng tại The Cake Lab.</p>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="openBieuMau()">Xem biểu mẫu</button>
+      </div>
+    </div>
+
+    <!-- 4. Quyết định -->
+    <div class="card">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5-5-2.6-5 2.6.9-5.5-4-3.9 5.5-.8L12 3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </div>
+      <h3>Quyết định</h3>
+      <span class="badge-soon">Đang phát triển</span>
+      <p>Mục tra cứu các Quyết định của công ty sẽ sớm ra mắt tại đây.</p>
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="openModal('soonModal')">Xem trước</button>
+      </div>
+    </div>
+
+    <!-- 5. Thông báo -->
+    <div class="card">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 01-3.4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <h3>Thông báo</h3>
+      <span class="badge-soon">Đang phát triển</span>
+      <p>Mục tra cứu các Thông báo của công ty sẽ sớm ra mắt tại đây.</p>
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="openModal('soonModal')">Xem trước</button>
+      </div>
+    </div>
+
+    <!-- 6. Thông tin liên hệ -->
+    <div class="card">
+      <div class="icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 6l8 7 8-7" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </div>
+      <h3>Thông tin liên hệ</h3>
+      <span class="badge-soon">Đang phát triển</span>
+      <p>Danh bạ liên hệ các phòng ban, bộ phận trong công ty sẽ sớm ra mắt tại đây.</p>
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="openModal('soonModal')">Xem trước</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>The Cake Lab Portal · Nội bộ · thecakelab.vn</footer>
+
+<!-- ===================== MODAL: HR LOGIN ===================== -->
+<div class="overlay" id="loginOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3>Đăng nhập HR</h3>
+        <p>Chỉ tài khoản HR mới có quyền thêm mới / xóa dữ liệu.</p>
+      </div>
+      <button class="close-x" onclick="closeModal('loginOverlay')">✕</button>
+    </div>
+    <div class="field">
+      <label>Mật khẩu HR</label>
+      <input type="password" id="hrPasswordInput" placeholder="Nhập mật khẩu">
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="submitHrLogin()">Đăng nhập</button>
+    <div class="form-msg" id="loginMsg"></div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: THÔNG TIN NHÂN SỰ ===================== -->
+<div class="overlay" id="nhanSuModal">
+  <div class="modal wide" style="max-width:820px;">
+    <div class="modal-head">
+      <div>
+        <h3>Điền thông tin nhân sự</h3>
+        <p>Hồ sơ nhân viên — vui lòng kê khai chính xác để phục vụ nghiệp vụ BHXH, Thuế TNCN.</p>
+      </div>
+      <button class="close-x" onclick="closeModal('nhanSuModal')">✕</button>
+    </div>
+
+    <div class="notice-box">
+      <p>Lưu ý trước khi kê khai:</p>
+      <ul>
+        <li>Thông tin nhân sự là thông tin vô cùng quan trọng để khai báo các nghiệp vụ BHXH, Thuế TNCN. Yêu cầu nhân viên kê khai chính xác 100% và chịu trách nhiệm với thông tin kê khai.</li>
+        <li>STK nhận lương là STK thuộc Ngân hàng Kỹ Thương Việt Nam (Techcombank).</li>
+      </ul>
+    </div>
+
+    <form id="employeeForm">
+      <h4 class="ns-h4">Phòng ban &amp; khối</h4>
+      <div class="field-row">
+        <div class="field"><label>Mã khối *</label><select id="maKhoi" required><option value="">-- Chọn --</option></select></div>
+        <div class="field"><label>Khối *</label><select id="khoi" required><option value="">-- Chọn --</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Mã phòng ban</label><select id="maPhongBan" disabled><option value="">-- Chọn khối trước --</option></select></div>
+        <div class="field"><label>Phòng ban *</label><select id="phongBan" required disabled><option value="">-- Chọn khối trước --</option></select></div>
+      </div>
+
+      <h4 class="ns-h4">Thông tin cơ bản</h4>
+      <div class="field-row">
+        <div class="field"><label>Mã nhân viên *</label><input id="maNhanVien" required placeholder="NV001"></div>
+        <div class="field"><label>Họ và tên *</label><input id="hoTen" required placeholder="Nguyễn Văn A"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Chức vụ *</label><input id="chucVu" required placeholder="Nhân viên"></div>
+        <div class="field">
+          <label>Giới tính *</label>
+          <select id="gioiTinh" required>
+            <option value="">-- Chọn --</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Phân loại</label>
+          <select id="phanLoai">
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Thời vụ">Thời vụ</option>
+            <option value="Thực tập">Thực tập</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Trạng thái</label>
+          <select id="trangThai">
+            <option value="Chính thức">Chính thức</option>
+            <option value="Thử việc">Thử việc</option>
+            <option value="Đã nghỉ việc">Đã nghỉ việc</option>
+          </select>
+        </div>
+      </div>
+
+      <h4 class="ns-h4">Liên lạc</h4>
+      <div class="field-row">
+        <div class="field"><label>Số điện thoại *</label><input id="soDienThoai" type="tel" required placeholder="0901234567"></div>
+        <div class="field"><label>Email *</label><input id="email" type="email" required placeholder="nv@thecakelab.vn"></div>
+      </div>
+
+      <h4 class="ns-h4">Thông tin cá nhân</h4>
+      <div class="field-row">
+        <div class="field"><label>Ngày sinh *</label><input id="ngaySinh" type="date" required></div>
+        <div class="field"><label>Số CCCD / CMND *</label><input id="soCCCD" required placeholder="036090123456"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Ngày cấp CCCD *</label><input id="ngayCapCCCD" type="date" required></div>
+        <div class="field"><label>Nơi cấp *</label><input id="noiCap" required placeholder="CA tỉnh/TP..."></div>
+      </div>
+      <div class="field">
+        <label>Địa chỉ thường trú *</label>
+        <input id="diaChiThuongTru" required placeholder="Số nhà, Phố/Đường, Phường/Xã, Tỉnh/Thành phố">
+        <div class="field-error" id="thuongTru_err">Địa chỉ phải theo đơn vị hành chính sau sáp nhập (ví dụ: Hà Nội, Hải Phòng, Huế…). Không dùng tên tỉnh/huyện cũ đã sáp nhập.</div>
+        <div class="hint">Ví dụ: Số 12, Phố Huế, Phường Bùi Thị Xuân, Hà Nội</div>
+      </div>
+      <div class="field">
+        <label>Địa chỉ liên hệ *</label>
+        <input id="diaChiLienHe" required placeholder="Số nhà, Phố/Đường, Phường/Xã, Tỉnh/Thành phố">
+        <div class="field-error" id="lienHe_err">Địa chỉ phải theo đơn vị hành chính sau sáp nhập (ví dụ: Hà Nội, Hải Phòng, Huế…). Không dùng tên tỉnh/huyện cũ đã sáp nhập.</div>
+        <div class="hint">Ví dụ: Số 12, Phố Huế, Phường Bùi Thị Xuân, Hà Nội</div>
+      </div>
+
+      <h4 class="ns-h4">Ngày tháng &amp; hợp đồng</h4>
+      <div class="field"><label>Ngày vào làm việc *</label><input id="ngayVaoLamViec" type="date" required></div>
+
+      <h4 class="ns-h4">Thông tin khác</h4>
+      <div class="field-row">
+        <div class="field"><label>Số sổ BHXH</label><input id="soSoBHXH" placeholder="0100123456"></div>
+        <div class="field"><label>Mã số thuế</label><input id="maSoThue" placeholder="8901234567"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Số tài khoản *</label><input id="soTaiKhoan" required placeholder="1234567890"></div>
+        <div class="field"><label>Tên tài khoản *</label><input id="tenTaiKhoan" required placeholder="NGUYEN VAN A"></div>
+      </div>
+      <div class="field"><label>Ngân hàng *</label><input id="nganHang" required placeholder="Vietcombank"></div>
+      <div class="field-row">
+        <div class="field"><label>Họ tên người thân *</label><input id="hoTenNguoiThan" required placeholder="Nguyễn Thị B"></div>
+        <div class="field"><label>SĐT người thân *</label><input id="sdtNguoiThan" type="tel" required placeholder="0901234567"></div>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%; margin-top:10px;" type="submit" id="submitBtn">Gửi thông tin</button>
+      <div class="status-msg" id="statusMsg"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== MODAL: BHXH FORM ===================== -->
+<div class="overlay" id="bhxhModal">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div>
+        <h3>Điền thông tin BHXH</h3>
+        <p>Thông tin này sẽ được HR sử dụng để làm thủ tục bảo hiểm xã hội.</p>
+      </div>
+      <button class="close-x" onclick="closeModal('bhxhModal')">✕</button>
+    </div>
+    <form id="bhxhForm" onsubmit="submitBhxhForm(event)">
+      <div class="field-row">
+        <div class="field"><label>Họ và tên *</label><input required name="Họ và tên"></div>
+        <div class="field"><label>Số BHXH</label><input name="Số BHXH"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>CCCD *</label><input required name="CCCD" placeholder="036090123456"></div>
+        <div class="field"><label>Ngày sinh *</label><input type="date" required name="Ngày sinh"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>SDT *</label><input required type="tel" name="SDT" placeholder="0901234567"></div>
+        <div class="field"><label>Mã số thuế</label><input name="Mã số thuế"></div>
+      </div>
+      <div class="field">
+        <label>Địa chỉ Trên hộ khẩu *</label>
+        <input required name="Địa chỉ Trên hộ khẩu">
+        <div class="hint">Điền địa chỉ sau sáp nhập: Địa chỉ + Phường/Xã + Tỉnh/Thành phố</div>
+      </div>
+      <div class="field">
+        <label>Địa chỉ trên giấy khai sinh *</label>
+        <input required name="Địa chỉ trên giấy khai sinh">
+        <div class="hint">Điền địa chỉ sau sáp nhập: Địa chỉ + Phường/Xã + Tỉnh/Thành phố</div>
+      </div>
+      <div class="field">
+        <label>Địa chỉ Liên hệ *</label>
+        <input required name="Địa chỉ Liên hệ">
+        <div class="hint">Điền địa chỉ sau sáp nhập: Địa chỉ + Phường/Xã + Tỉnh/Thành phố</div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Nơi đăng ký khám chữa bệnh ban đầu</label><input name="Nơi đăng ký khám chữa bệnh ban đầu"></div>
+        <div class="field"><label>Họ tên chủ hộ *</label><input required name="Họ tên chủ hộ"></div>
+      </div>
+      <div class="field"><label>Dân tộc *</label><input required name="Dân tộc" placeholder="Kinh"></div>
+      <button class="btn btn-primary" style="width:100%" type="submit" id="bhxhSubmitBtn">Nộp thông tin</button>
+      <div class="form-msg" id="bhxhMsg"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== MODAL: BIỂU MẪU ===================== -->
+<div class="overlay" id="bieuMauModal">
+  <div class="modal wide">
+    <div class="modal-head">
+      <div>
+        <h3>Biểu mẫu</h3>
+        <p>Bấm vào tên để xem / tải về.</p>
+      </div>
+      <button class="close-x" onclick="closeModal('bieuMauModal')">✕</button>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-loai="Đơn" onclick="switchBieuMauTab(this,'Đơn')">Đơn</button>
+      <button class="tab-btn" data-loai="Phiếu đánh giá" onclick="switchBieuMauTab(this,'Phiếu đánh giá')">Phiếu đánh giá</button>
+      <button class="tab-btn" data-loai="Khác" onclick="switchBieuMauTab(this,'Khác')">Khác</button>
+    </div>
+    <div id="bieuMauList"></div>
+
+    <div class="admin-add" id="bieuMauAdmin" style="display:none;">
+      <h4>Thêm biểu mẫu mới (HR)</h4>
+      <div class="field"><label>Tên biểu mẫu</label><input id="newBmTen" placeholder="VD: Đơn xin nghỉ phép"></div>
+      <div class="field"><label>Link (Google Drive)</label><input id="newBmLink" placeholder="https://drive.google.com/..."></div>
+      <div class="loai-select-wrap">
+        <button type="button" class="sel" id="loaiBtnDon" onclick="setNewBmLoai('Đơn')">Đơn</button>
+        <button type="button" id="loaiBtnPhieu" onclick="setNewBmLoai('Phiếu đánh giá')">Phiếu đánh giá</button>
+        <button type="button" id="loaiBtnKhac" onclick="setNewBmLoai('Khác')">Khác</button>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="addBieuMau()">+ Thêm biểu mẫu</button>
+      <div class="form-msg" id="bmAdminMsg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: COMING SOON ===================== -->
+<div class="overlay" id="soonModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3>Đang phát triển</h3>
+        <p>Mục này sẽ sớm được cập nhật trong phiên bản tiếp theo của Portal.</p>
+      </div>
+      <button class="close-x" onclick="closeModal('soonModal')">✕</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CẤU HÌNH — dán URL Web App (Apps Script) sau khi deploy Code.gs
+   ============================================================ */
+const CONFIG = {
+  API_URL: 'https://script.google.com/macros/s/AKfycbxvfY-E4STaIVM_rmy8ARpClzrJf3-OjZTVdS3QgSxIfJigWG0z8wSvyGwoOaI-RVBI/exec'
+};
+
+let currentBieuMauLoai = 'Đơn';
+let newBmLoai = 'Đơn';
+let bieuMauCache = [];
+
+/* ---------- Helpers ---------- */
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function openNhanSuForm(){
+  openModal('nhanSuModal');
+}
+
+/* ============================================================
+   THÔNG TIN NHÂN SỰ — logic đầy đủ (khối/phòng ban, validate địa chỉ, gửi form)
+   Dùng chung Apps Script webhook với app hồ sơ nhân viên trước đây.
+   ============================================================ */
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbx6-bfWfch-oS29B50lenXVssOB_DSsjEprlZ_U0raxOHtBB8kKVPGTNp6wnvhqpcPV/exec";
+
+// Danh sách khối
+const KHOI_LIST = [
+  { ma: "13", ten: "Khối kinh doanh" },
+  { ma: "14", ten: "Khối văn phòng" },
+  { ma: "15", ten: "Khối sản xuất" }
+];
+
+// Danh sách phòng ban theo khối
+const PHONGBAN_LIST = [
+  { maKhoi:"13", maPB:"11001", ten:"CH 45 Tuệ Tĩnh" },
+  { maKhoi:"13", maPB:"11002", ten:"CH Park 7 Time City" },
+  { maKhoi:"13", maPB:"11700", ten:"CH 71 Hàng Trống" },
+  { maKhoi:"13", maPB:"11701", ten:"CH Yên Phụ" },
+  { maKhoi:"13", maPB:"11003", ten:"CH 3A Phan Bội Châu" },
+  { maKhoi:"13", maPB:"11004", ten:"CH 26 Trung Hoà" },
+  { maKhoi:"13", maPB:"12001", ten:"Bộ phận online" },
+  { maKhoi:"13", maPB:"12002", ten:"Bộ phận B2B" },
+  { maKhoi:"13", maPB:"12003", ten:"Bộ phận Shopeefood" },
+  { maKhoi:"13", maPB:"12004", ten:"Bộ phận GrabFood" },
+  { maKhoi:"13", maPB:"12005", ten:"Bộ phận BeFood" },
+  { maKhoi:"13", maPB:"13001", ten:"Khối vận hành chung kinh doanh" },
+  { maKhoi:"13", maPB:"13002", ten:"Bộ phận kinh doanh bán lẻ" },
+  { maKhoi:"13", maPB:"13003", ten:"Bộ phận Marketing" },
+  { maKhoi:"13", maPB:"13004", ten:"Bộ phận giao hàng" },
+  { maKhoi:"14", maPB:"14001", ten:"Khối vận hành chung văn phòng" },
+  { maKhoi:"14", maPB:"14002", ten:"Ban giám đốc" },
+  { maKhoi:"14", maPB:"14003", ten:"Bộ phận kế toán" },
+  { maKhoi:"14", maPB:"14004", ten:"Bộ phận hành chính nhân sự" },
+  { maKhoi:"15", maPB:"15001", ten:"Bộ phận vận hành chung sản xuất" },
+  { maKhoi:"15", maPB:"15005", ten:"Tổ bánh lạnh - sinh nhật" },
+  { maKhoi:"15", maPB:"15002", ten:"Tổ bánh lạnh - kem nhỏ" },
+  { maKhoi:"15", maPB:"15003", ten:"Tổ bánh nóng" },
+  { maKhoi:"15", maPB:"15004", ten:"Tổ đóng gói" }
+];
+
+const $ = (id) => document.getElementById(id);
+
+// Danh sách tỉnh/thành phố sau sáp nhập (hiệu lực 01/07/2025)
+// Nguồn: danh-sach-3321-xa-phuong.xls (34 tỉnh/thành phố)
+const TINH_LIST = [
+  "Hà Nội","Cao Bằng","Tuyên Quang","Điện Biên","Lai Châu",
+  "Sơn La","Lào Cai","Thái Nguyên","Lạng Sơn","Quảng Ninh",
+  "Bắc Ninh","Phú Thọ","Hải Phòng","Hưng Yên","Ninh Bình",
+  "Thanh Hóa","Nghệ An","Hà Tĩnh","Quảng Trị","Huế",
+  "Đà Nẵng","Quảng Ngãi","Gia Lai","Khánh Hòa","Đắk Lắk",
+  "Lâm Đồng","Đồng Nai","TP. Hồ Chí Minh","Tây Ninh","Đồng Tháp",
+  "Vĩnh Long","An Giang","Cần Thơ","Cà Mau"
+];
+
+// Chuẩn hoá tên tỉnh để so sánh (bỏ tiền tố "TP. ", "Tỉnh ")
+const TINH_KEYS = TINH_LIST.map(t =>
+  t.toLowerCase().replace(/^tp\.\s*/i,"").replace(/^tỉnh\s*/i,"")
+);
+
+// Danh sách phường/xã/thị trấn sau sáp nhập (3321 đơn vị, hiệu lực 01/07/2025)
+// Nguồn: danh-sach-3321-xa-phuong.xls
+const XA_PHUONG_KEYS = ["1 bảo lộc","2 bảo lộc","3 bảo lộc","a dơi","a lưới 1","a lưới 2","a lưới 3","a lưới 4","a lưới 5","a mú sung","a sào","al bá","an biên","an bình","an châu","an cư","an cựu","an dương","an hiệp","an hòa","an hưng","an hải","an hội","an hội tây","an hội đông","an hữu","an khánh","an khê","an long","an lão","an lương","an lạc","an lạc thôn","an lộc","an lục long","an minh","an nghĩa","an ngãi trung","an nhơn","an nhơn bắc","an nhơn nam","an nhơn tây","an nhơn đông","an ninh","an nông","an phong","an phú","an phú tân","an phú đông","an phước","an quang","an qui","an sinh","an thành","an thạnh","an thạnh thủy","an thắng","an thới đông","an toàn","an trường","an trạch","an tường","an tịnh","an vinh","an viễn","an xuyên","an đông","an định","anh dũng","anh sơn","anh sơn đông","avương","ayun","ayun pa","ba bể","ba chúc","ba chẽ","ba dinh","ba gia","ba lòng","ba ngòi","ba sao","ba sơn","ba tri","ba tô","ba tơ","ba vinh","ba vì","ba xa","ba đình","ba đồn","ba động","bao la","biên hòa","biên sơn","biển bạch","biển hồ","biển động","biện thượng","bom bo","bum nưa","bum tở","buôn hồ","buôn ma thuột","buôn đôn","bà nà","bà rịa","bà điểm","bàn cờ","bàn thạch","bàu bàng","bàu cạn","bàu hàm","bàu lâm","bá thước","bá xuyên","bác ái","bác ái tây","bác ái đông","bách quang","bát mọt","bát tràng","bát xát","bãi cháy","bình an","bình ca","bình chuẩn","bình chánh","bình châu","bình chương","bình cơ","bình dương","bình gia","bình giang","bình giã","bình hiệp","bình hàng trung","bình hòa","bình hưng","bình hưng hòa","bình khánh","bình khê","bình kiến","bình liêu","bình long","bình lư","bình lộc","bình lợi","bình lợi trung","bình lục","bình minh","bình mỹ","bình nguyên","bình ninh","bình phú","bình phước","bình quới","bình sơn","bình thanh","bình thuận","bình thành","bình thạnh","bình thạnh đông","bình thới","bình thủy","bình tiên","bình trưng","bình trị đông","bình tuyền","bình tân","bình tây","bình xa","bình xuyên","bình xuân","bình yên","bình điền","bình đông","bình đại","bình định","bình đức","bích hào","bó sinh","bù gia mập","bù đăng","búng lao","bạc liêu","bạch hà","bạch mai","bạch ngọc","bạch thông","bạch xa","bạch đích","bạch đằng","bản bo","bản hồ","bản liền","bản lầu","bản máy","bản nguyên","bản xèo","bảo an","bảo hà","bảo lâm","bảo lâm 1","bảo lâm 2","bảo lâm 3","bảo lâm 4","bảo lâm 5","bảo lạc","bảo nhai","bảo thuận","bảo thạnh","bảo thắng","bảo vinh","bảo yên","bảo ái","bảo đài","bảy hiền","bất bạt","bắc an phụ","bắc bình","bắc cam ranh","bắc gia nghĩa","bắc giang","bắc gianh","bắc hà","bắc hồng lĩnh","bắc khánh vĩnh","bắc kạn","bắc lý","bắc lũng","bắc mê","bắc nha trang","bắc ninh hòa","bắc quang","bắc ruộng","bắc thanh miện","bắc thái ninh","bắc thụy anh","bắc tiên hưng","bắc trạch","bắc tân uyên","bắc yên","bắc đông hưng","bắc đông quan","bằng hành","bằng lang","bằng luân","bằng mạc","bằng thành","bằng vân","bế văn đàn","bến cát","bến cầu","bến giằng","bến hiên","bến hải","bến lức","bến quan","bến thành","bến tre","bỉm sơn","bố hạ","bố trạch","bồ đề","bồng lai","bồng sơn","bờ ngoong","bờ y","b'lao","ca thành","cai kinh","cai lậy","cam an","cam hiệp","cam hồng","cam linh","cam ly - đà lạt","cam lâm","cam lộ","cam phục","cam ranh","cam đường","can lộc","canh liên","canh tân","canh vinh","cao bồ","cao dương","cao lãnh","cao lộc","cao minh","cao phong","cao sơn","cao xanh","cao đức","chi lăng","chiêm hoá","chiên đàn","chiêu lưu","chiến thắng","chiềng an","chiềng cơi","chiềng hoa","chiềng hặc","chiềng ken","chiềng khoong","chiềng khương","chiềng la","chiềng lao","chiềng mai","chiềng mung","chiềng sinh","chiềng sung","chiềng sơ","chiềng sơn","chiềng sại","chu văn an","chuyên mỹ","chà tở","chánh hiệp","chánh hưng","chánh phú hòa","chân mây - lăng cô","chân mộng","châu bình","châu hòa","châu hưng","châu hồng","châu khê","châu lộc","châu ninh","châu pha","châu phong","châu phú","châu quế","châu sơn","châu thành","châu thới","châu tiến","châu đốc","châu đức","chí linh","chí minh","chí tiên","chí đám","chũ","chơ long","chơn thành","chư a thai","chư krey","chư prông","chư păh","chư pưh","chư sê","chương dương","chương mỹ","chấn hưng","chấn thịnh","chất bình","chế tạo","chợ gạo","chợ lách","chợ lớn","chợ mới","chợ quán","chợ rã","chợ vàm","chợ đồn","co mạ","con cuông","cuôr đăng","cà ná","cà đam","càng long","các sơn","cái bè","cái chiên","cái khế","cái ngang","cái nhum","cái nước","cái răng","cái vồn","cái đôi vàm","cán tỷ","cát lái","cát ngạn","cát thành","cát thịnh","cát tiên","cát tiên 2","cát tiên 3","cát tiến","cô ba","cô tô","côn lôn","côn minh","công chính","công hải","công sơn","cù lao dung","cù lao giêng","cúc phương","cư bao","cư jút","cư m'gar","cư m'ta","cư prao","cư pui","cư pơng","cư yang","cường lợi","cảm nhân","cảnh thụy","cần giuộc","cần giờ","cần yên","cần đăng","cần đước","cầu giấy","cầu khởi","cầu kiệu","cầu kè","cầu ngang","cầu thia","cầu ông lãnh","cẩm bình","cẩm duệ","cẩm giang","cẩm giàng","cẩm hưng","cẩm khê","cẩm lý","cẩm lạc","cẩm lệ","cẩm mỹ","cẩm phả","cẩm thành","cẩm thạch","cẩm thủy","cẩm trung","cẩm tân","cẩm tú","cẩm vân","cẩm xuyên","cốc lầu","cốc pàng","cốc san","cồn tiên","cổ lũng","cổ lễ","cổ đô","cổ đạm","cờ đỏ","củ chi","cửa lò","cửa nam","cửa tùng","cửa việt","cửa ông","cửu an","cự đồng","dang kang","di linh","diên hà","diên hồng","diên khánh","diên lâm","diên lạc","diên sanh","diên thọ","diên điền","diễn châu","dliê ya","dray bhăng","du già","dur kmăl","duy hà","duy nghĩa","duy tiên","duy tân","duy xuyên","duyên hải","dào san","dân chủ","dân hòa","dân hóa","dân tiến","dĩ an","dũng tiến","dương hòa","dương hưu","dương kinh","dương minh châu","dương nỗ","dương nội","dương quỳ","dầu giây","dầu tiếng","dền sáng","dục nông","d'ran","ea bung","ea bá","ea drông","ea drăng","ea hiao","ea h'leo","ea kao","ea kar","ea khăl","ea kiết","ea kly","ea knuếc","ea knốp","ea ktur","ea ly","ea m'droh","ea na","ea ning","ea nuôl","ea phê","ea păl","ea riêng","ea rốk","ea súp","ea trang","ea tul","ea wer","ea wy","ea ô","gia bình","gia hanh","gia hiệp","gia hòa","gia hưng","gia hội","gia kiệm","gia lâm","gia lộc","gia phong","gia phù","gia phú","gia phúc","gia sàng","gia thuận","gia trấn","gia tường","gia viên","gia viễn","gia vân","gia định","giai lạc","giai xuân","giang thành","giao an","giao bình","giao hoà","giao hưng","giao long","giao minh","giao ninh","giao phúc","giao thuỷ","gio linh","giá rai","giáp trung","giảng võ","giồng riềng","giồng trôm","gành hào","gào","gò công","gò công đông","gò dầu","gò nổi","gò quao","gò vấp","hai bà trưng","hiếu giang","hiếu phụng","hiếu thành","hiền kiệt","hiền lương","hiền quan","hiển khánh","hiệp bình","hiệp cường","hiệp hoà","hiệp hòa","hiệp hưng","hiệp lực","hiệp mỹ","hiệp phước","hiệp thành","hiệp thạnh","hiệp đức","hoa lư","hoa lộc","hoa quân","hoa thám","hoà an","hoài nhơn","hoài nhơn bắc","hoài nhơn nam","hoài nhơn tây","hoài nhơn đông","hoài ân","hoài đức","hoàn kiếm","hoàn long","hoàn lão","hoàng an","hoàng cương","hoàng hoa thám","hoàng liệt","hoàng mai","hoàng quế","hoàng su phì","hoàng vân","hoàng văn thụ","hoành bồ","hoành mô","hoành sơn","hoạt giang","hoằng châu","hoằng giang","hoằng hóa","hoằng lộc","hoằng phú","hoằng sơn","hoằng thanh","hoằng tiến","hra","hua bum","huy giáp","huồi tụ","huổi một","hy cương","hà an","hà bắc","hà giang 1","hà giang 2","hà huy tập","hà linh","hà long","hà lầm","hà nam","hà nha","hà quảng","hà tiên","hà trung","hà tu","hà tây","hà đông","hàm giang","hàm kiệm","hàm liêm","hàm rồng","hàm thuận","hàm thuận bắc","hàm thuận nam","hàm thạnh","hàm thắng","hàm tân","hàm yên","hàng gòn","hát môn","hòa an","hòa bình","hòa bắc","hòa cường","hòa hiệp","hòa hưng","hòa hội","hòa khánh","hòa long","hòa lạc","hòa lợi","hòa minh","hòa mỹ","hòa ninh","hòa phú","hòa sơn","hòa thuận","hòa thành","hòa thắng","hòa thịnh","hòa tiến","hòa trí","hòa trạch","hòa tú","hòa vang","hòa xuân","hòa xá","hòa điền","hòn nghệ","hòn đất","hóa châu","hóa quỳ","hóc môn","hùng an","hùng chân","hùng châu","hùng hòa","hùng lợi","hùng sơn","hùng thắng","hùng việt","hùng đức","hưng hà","hưng hội","hưng khánh","hưng khánh trung","hưng long","hưng lộc","hưng mỹ","hưng nguyên","hưng nguyên nam","hưng nhượng","hưng phú","hưng phước","hưng thuận","hưng thạnh","hưng thịnh","hưng vũ","hưng điền","hưng đạo","hương an","hương bình","hương cần","hương khê","hương mỹ","hương phố","hương sơn","hương thủy","hương trà","hương xuân","hương đô","hướng hiệp","hướng lập","hướng phùng","hạ bằng","hạ hòa","hạ lang","hạ long","hạc thành","hạnh lâm","hạnh phúc","hạnh thông","hạp lĩnh","hải an","hải anh","hải bình","hải châu","hải dương","hải hòa","hải hưng","hải hậu","hải lăng","hải lĩnh","hải lạng","hải lộc","hải lựu","hải ninh","hải quang","hải sơn","hải thịnh","hải tiến","hải vân","hải xuân","hảo đước","hậu lộc","hậu mỹ","hậu nghĩa","hậu thạnh","hỏa lựu","hố nai","hồ thầu","hồ thị kỷ","hồ tràm","hồ vương","hồ đắc kiện","hồi xuân","hồng an","hồng bàng","hồng châu","hồng dân","hồng gai","hồng hà","hồng lộc","hồng minh","hồng ngự","hồng phong","hồng quang","hồng sơn","hồng thu","hồng thái","hồng vân","hồng vũ","hội an","hội an tây","hội an đông","hội cư","hội hoan","hội phú","hội sơn","hội thịnh","hợp kim","hợp lý","hợp minh","hợp thành","hợp thịnh","hợp tiến","hữu khuông","hữu kiệm","hữu liên","hữu lũng","ia boòng","ia băng","ia chia","ia chim","ia dom","ia dreh","ia dơk","ia grai","ia hiao","ia hrung","ia hrú","ia khươl","ia ko","ia krái","ia krêl","ia le","ia ly","ia lâu","ia lốp","ia mơ","ia nan","ia o","ia pa","ia phí","ia pia","ia pnôn","ia púch","ia rbol","ia rsai","ia rvê","ia sao","ia tul","ia tôr","ia tơi","ia đal","ka đô","kbang","kdang","keng đu","kha sơn","khao mang","khe sanh","khe tre","khoen on","khoái châu","khun há","khuôn lùng","khuất xá","kháng chiến","khánh an","khánh bình","khánh cường","khánh hòa","khánh hưng","khánh hậu","khánh hội","khánh khê","khánh lâm","khánh nhạc","khánh sơn","khánh thiện","khánh trung","khánh vĩnh","khánh xuân","khánh yên","khâm đức","khâu vai","khúc thừa dụ","khương đình","khả cửu","khổng lào","kim anh","kim bon","kim bình","kim bôi","kim bảng","kim hoa","kim liên","kim long","kim ngân","kim phú","kim phượng","kim sơn","kim thanh","kim thành","kim trà","kim tân","kim điền","kim đông","kim đồng","kinh bắc","kinh môn","kiên lao","kiên lương","kiên mộc","kiên thọ","kiên đài","kiến an","kiến hưng","kiến hải","kiến minh","kiến thiết","kiến thụy","kiến tường","kiến xương","kiến đức","kiều phú","kon braih","kon chiêng","kon gang","kon plông","kon tum","kon đào","krong","krông ana","krông bông","krông búk","krông nô","krông năng","krông pắc","krông á","kép","kông bơ la","kông chro","kẻ sặt","kế sách","kỳ anh","kỳ hoa","kỳ khang","kỳ lạc","kỳ lừa","kỳ sơn","kỳ thượng","kỳ văn","kỳ xuân","la bằng","la dêê","la dạ","la gi","la hiên","la lay","la ngà","la êê","lai hòa","lai khê","lai thành","lai vung","lai đồng","lam sơn","lam thành","lam vỹ","lang biang - đà lạt","lao bảo","lao chải","linh hồ","linh sơn","linh xuân","liêm hà","liêm tuyền","liên bão","liên chiểu","liên châu","liên hiệp","liên hòa","liên hương","liên minh","liên sơn","liên sơn lắk","liêu tú","long an","long biên","long bình","long cang","long châu","long chữ","long cốc","long hiệp","long hoa","long hà","long hòa","long hưng","long hương","long hải","long hẹ","long hồ","long hữu","long hựu","long khánh","long kiến","long mỹ","long nguyên","long phú","long phú 1","long phú thuận","long phước","long phụng","long quảng","long sơn","long thuận","long thành","long thạnh","long tiên","long trường","long tuyền","long vĩnh","long xuyên","long điền","long định","long đức","luận thành","lào cai","lái thiêu","láng","láng tròn","lâm bình","lâm giang","lâm sơn","lâm thao","lâm thượng","lâm tân","lâm viên - đà lạt","lân phong","lãnh ngọc","lê chân","lê hồ","lê lợi","lê quý đôn","lê thanh nghị","lê ích mộc","lê đại hành","lìa","lóng phiêng","lóng sập","lùng phình","lùng tám","lý bôn","lý nhân","lý quốc","lý thường kiệt","lý văn lâm","lĩnh nam","lĩnh toại","lũng cú","lũng nặm","lũng phìn","lơ pang","lưu kiếm","lưu nghiệp anh","lưu vệ","lương bằng","lương hòa","lương hòa lạc","lương minh","lương phú","lương sơn","lương thế trân","lương thịnh","lương tài","lương tâm","lương văn tri","lượng minh","lạc dương","lạc lương","lạc phượng","lạc sơn","lạc thủy","lạc đạo","lạng giang","lấp vò","lập thạch","lệ ninh","lệ thủy","lịch hội thượng","lộc an","lộc bình","lộc hà","lộc hưng","lộc ninh","lộc quang","lộc thuận","lộc thành","lộc thạnh","lộc tấn","lợi bác","lục hồn","lục nam","lục ngạn","lục sĩ thành","lục sơn","lục yên","lực hành","mai châu","mai hoa","mai hạ","mai phụ","mai sơn","mang yang","mao điền","minh châu","minh hòa","minh hóa","minh hưng","minh hợp","minh khai","minh long","minh lương","minh ngọc","minh phụng","minh quang","minh sơn","minh thanh","minh thái","minh thạnh","minh thọ","minh tâm","minh tân","minh xuân","minh đài","minh đức","muổi nọi","mão điền","mèo vạc","mê linh","móng cái 1","móng cái 2","móng cái 3","mô rai","môn sơn","mông dương","mù cang chải","mù cả","măng bút","măng ri","măng đen","mũi né","mường bang","mường bi","mường bo","mường bám","mường bú","mường chanh","mường chiên","mường chà","mường chọng","mường cơi","mường giôn","mường ham","mường hoa","mường hum","mường hung","mường khiêng","mường khoa","mường khương","mường kim","mường la","mường lai","mường lay","mường luân","mường lát","mường lèo","mường lý","mường lạn","mường lầm","mường lống","mường mìn","mường mô","mường mùn","mường nhà","mường nhé","mường phăng","mường pồn","mường quàng","mường sại","mường than","mường thanh","mường thàng","mường toong","mường tè","mường típ","mường tùng","mường vang","mường xén","mường é","mường động","mường ảng","mạo khê","mẫu sơn","mậu a","mậu duệ","mậu lâm","mậu thạch","mễ sở","mỏ cày","mỏ vàng","mộ đức","mộc châu","mộc hóa","mộc sơn","mỹ an","mỹ an hưng","mỹ chánh hòa","mỹ hiệp","mỹ hào","mỹ hòa hưng","mỹ hương","mỹ hạnh","mỹ long","mỹ lâm","mỹ lý","mỹ lệ","mỹ lộc","mỹ lợi","mỹ ngãi","mỹ phong","mỹ phước","mỹ phước tây","mỹ quí","mỹ quý","mỹ quới","mỹ sơn","mỹ thiện","mỹ tho","mỹ thuận","mỹ thành","mỹ thái","mỹ thượng","mỹ thạnh","mỹ thọ","mỹ thới","mỹ thủy","mỹ trà","mỹ tú","mỹ tịnh an","mỹ xuyên","mỹ yên","mỹ đức","mỹ đức tây","m'drắk","na dương","na loi","na mèo","na ngoi","na rì","na sang","na son","na sầm","nam an phụ","nam ba đồn","nam ban lâm hà","nam cam ranh","nam cát tiên","nam cường","nam cửa việt","nam dong","nam dương","nam gia nghĩa","nam giang","nam gianh","nam hoa lư","nam hà lâm hà","nam hòa","nam hải lăng","nam hồng","nam hồng lĩnh","nam ka","nam khánh vĩnh","nam lý","nam minh","nam nha trang","nam ninh","nam ninh hòa","nam phù","nam phước","nam quang","nam sách","nam sơn","nam sầm sơn","nam thanh miện","nam thành","nam thái ninh","nam thụy anh","nam tiên hưng","nam tiền hải","nam triệu","nam trà my","nam trạch","nam trực","nam tuấn","nam xang","nam xuân","nam đà","nam đàn","nam đông","nam đông hà","nam đông hưng","nam định","nam đồ sơn","nam đồng","nga an","nga my","nga sơn","nga thắng","nghi dương","nghi lộc","nghi sơn","nghi xuân","nghinh tường","nghiên loan","nghĩa dân","nghĩa giang","nghĩa hành","nghĩa hưng","nghĩa khánh","nghĩa lâm","nghĩa lộ","nghĩa lộc","nghĩa mai","nghĩa phương","nghĩa sơn","nghĩa thuận","nghĩa thành","nghĩa thọ","nghĩa trung","nghĩa trụ","nghĩa tá","nghĩa tâm","nghĩa đàn","nghĩa đô","nghĩa đồng","nghị đức","nguyên bình","nguyên giáp","nguyễn bỉnh khiêm","nguyễn du","nguyễn huệ","nguyễn lương bằng","nguyễn nghiêm","nguyễn phích","nguyễn trãi","nguyễn uý","nguyễn việt khái","nguyễn văn linh","nguyễn đại năng","nguyệt hóa","nguyệt viên","nguyệt đức","nguyệt ấn","ngân sơn","ngã bảy","ngã năm","ngãi giao","ngãi tứ","ngô mây","ngô quyền","ngũ chỉ sơn","ngũ hiệp","ngũ hành sơn","ngũ lạc","ngọc chiến","ngọc chúc","ngọc hà","ngọc hồi","ngọc linh","ngọc liên","ngọc long","ngọc lâm","ngọc lặc","ngọc sơn","ngọc thiện","ngọc trạo","ngọc tố","ngọc đường","ngọk bay","ngọk réo","ngọk tụ","ngự thiên","nha bích","nha trang","nhi sơn","nhiêu lộc","nho quan","nhu gia","nhuận phú tân","nhuận đức","nhà bè","nhân cơ","nhân hà","nhân hòa","nhân lý","nhân nghĩa","nhân thắng","nhã nam","nhôn mai","nhơn châu","nhơn hòa lập","nhơn hội","nhơn mỹ","nhơn ninh","nhơn phú","nhơn trạch","nhơn ái","như quỳnh","như thanh","như xuân","nhất hòa","nhị chiểu","nhị long","nhị quý","nhị trường","nhữ khê","nhựt tảo","ninh châu","ninh chử","ninh cường","ninh gia","ninh giang","ninh hòa","ninh hải","ninh kiều","ninh phước","ninh quới","ninh sơn","ninh thạnh","ninh thạnh lợi","ninh xá","ninh điền","niêm sơn","nà bủng","nà hang","nà hỳ","nà phặc","nà tấu","nâm nung","nông cống","nông sơn","nông tiến","nông trang","nùng trí cao","núa ngam","núi cấm","núi thành","năm căn","nấm dẩn","nậm chày","nậm cuổi","nậm có","nậm cắn","nậm dịch","nậm hàng","nậm kè","nậm lầu","nậm mạ","nậm nèn","nậm sỏ","nậm ty","nậm tăm","nậm xé","nật sơn","nếnh","nội bài","pa ham","pa tần","pa ủ","pha long","phan ngọc hiển","phan rang","phan rí cửa","phan sơn","phan thanh","phan thiết","phan đình phùng","phiêng cằm","phiêng khoài","phiêng pằn","phong châu","phong cốc","phong dinh","phong doanh","phong dụ hạ","phong dụ thượng","phong hiệp","phong hòa","phong hải","phong mỹ","phong nha","phong nẫm","phong phú","phong quang","phong quảng","phong thái","phong thạnh","phong thổ","phong điền","phát diệm","phình giàng","phình hồ","phù cát","phù khê","phù liễn","phù lãng","phù lưu","phù mỹ","phù mỹ bắc","phù mỹ nam","phù mỹ tây","phù mỹ đông","phù ninh","phù vân","phù yên","phù đổng","phùng nguyên","phú an","phú bài","phú bình","phú cát","phú cường","phú diễn","phú giáo","phú hòa","phú hòa 1","phú hòa 2","phú hòa đông","phú hồ","phú hữu","phú hựu","phú khê","phú khương","phú linh","phú long","phú lâm","phú lý","phú lương","phú lạc","phú lệ","phú lộc","phú lợi","phú mỡ","phú mỹ","phú nghĩa","phú nhuận","phú ninh","phú phụng","phú quới","phú riềng","phú sơn","phú sơn lâm hà","phú thiện","phú thuận","phú thuỷ","phú thành","phú thái","phú thượng","phú thạnh","phú thịnh","phú thọ","phú thọ hòa","phú trung","phú trạch","phú tâm","phú tân","phú túc","phú vang","phú vinh","phú xuyên","phú xuân","phú yên","phú đình","phú định","phúc hòa","phúc khánh","phúc lộc","phúc lợi","phúc sơn","phúc thuận","phúc thịnh","phúc thọ","phúc thọ lâm hà","phúc trạch","phúc yên","phương bình","phương liễu","phương liệt","phương thịnh","phước an","phước bình","phước chánh","phước chỉ","phước dinh","phước giang","phước hiệp","phước hà","phước hòa","phước hải","phước hậu","phước hội","phước hữu","phước long","phước lý","phước mỹ trung","phước năng","phước sơn","phước thành","phước thái","phước thạnh","phước thắng","phước thới","phước trà","phước tân","phước vinh","phước vĩnh tây","phượng dực","phượng sơn","phượng tiến","phạm ngũ lão","phạm sư mạnh","phật tích","phố bảng","phố hiến","phổ yên","phụ dực","phục hòa","phụng công","phụng hiệp","phủ lý","phủ thông","pleiku","pu nhi","pu sam cáp","pà cò","pà vầy sủ","pù luông","pù nhi","pú nhung","púng bánh","púng luông","pơng drang","pắc ngà","pắc ta","pờ ly ngài","pờ tó","quan sơn","quan thành","quan triều","quang bình","quang chiểu","quang hanh","quang hán","quang hưng","quang long","quang lịch","quang minh","quang sơn","quang thiện","quang trung","quang đồng","quy mông","quy nhơn","quy nhơn bắc","quy nhơn nam","quy nhơn tây","quy nhơn đông","quy đức","quyết thắng","quài tở","quách phẩm","quân chu","quý hòa","quý lương","quý lộc","quản bạ","quảng bình","quảng bạch","quảng bị","quảng châu","quảng chính","quảng hà","quảng hòa","quảng khê","quảng la","quảng lâm","quảng lập","quảng nguyên","quảng ngọc","quảng ninh","quảng oai","quảng phú","quảng sơn","quảng trạch","quảng trị","quảng trực","quảng tân","quảng tín","quảng uyên","quảng yên","quảng điền","quảng đức","quế phong","quế phước","quế sơn","quế sơn trung","quế võ","quốc khánh","quốc oai","quốc việt","quới an","quới thiện","quới điền","quỳ châu","quỳ hợp","quỳnh an","quỳnh anh","quỳnh lưu","quỳnh mai","quỳnh nhai","quỳnh phú","quỳnh phụ","quỳnh sơn","quỳnh tam","quỳnh thắng","quỳnh văn","quỹ nhất","rạch dừa","rạch giá","rạch kiến","rạng đông","rờ kơi","sa bình","sa huỳnh","sa loong","sa lý","sa pa","sa thầy","sa đéc","sam mứn","sao vàng","sen ngư","si ma cai","si pa phìn","sin suối hồ","song khủa","song liễu","song lộc","song phú","sró","suối dầu","suối hai","suối hiệp","suối kiết","suối trai","suối tọ","sà phìn","sài gòn","sáng nhè","sì lở lầu","sìn hồ","sín chéng","sín chải","sín thầu","sính phình","sóc sơn","sóc trăng","sông công","sông cầu","sông hinh","sông kôn","sông lô","sông lũy","sông mã","sông ray","sông trí","sông vàng","sông đốc","sơn cẩm hà","sơn dương","sơn giang","sơn hà","sơn hòa","sơn hạ","sơn hải","sơn hồng","sơn kim 1","sơn kim 2","sơn kiên","sơn kỳ","sơn lang","sơn linh","sơn lâm","sơn lương","sơn lộ","sơn mai","sơn mỹ","sơn nam","sơn qui","sơn thuỷ","sơn thành","sơn thủy","sơn tiến","sơn trà","sơn tây","sơn tây hạ","sơn tây thượng","sơn tịnh","sơn vĩ","sơn điền","sơn điện","sơn đông","sơn đồng","sơn động","sảng mộc","sầm sơn","sốp cộp","sủng máng","tam anh","tam bình","tam chung","tam chúc","tam dương","tam dương bắc","tam giang","tam hiệp","tam hưng","tam hải","tam hồng","tam hợp","tam kim","tam kỳ","tam long","tam lư","tam mỹ","tam ngãi","tam nông","tam phước","tam quan","tam quang","tam sơn","tam thanh","tam thái","tam thắng","tam tiến","tam xuân","tam đa","tam điệp","tam đảo","tam đồng","than uyên","thanh an","thanh ba","thanh bình","thanh bồng","thanh hà","thanh hòa","thanh hưng","thanh khê","thanh kỳ","thanh liêm","thanh liệt","thanh long","thanh lâm","thanh mai","thanh miếu","thanh miện","thanh mỹ","thanh nưa","thanh oai","thanh phong","thanh quân","thanh sơn","thanh thịnh","thanh thủy","thanh trì","thanh tùng","thanh xuân","thanh yên","thanh điền","thanh đức","thiên cầm","thiên hương","thiên lộc","thiên nhẫn","thiên phủ","thiên trường","thiết ống","thiện hòa","thiện hưng","thiện long","thiện thuật","thiện tân","thiện tín","thiệu hóa","thiệu quang","thiệu tiến","thiệu toán","thiệu trung","thoại sơn","thu bồn","thu cúc","thu lũm","thung nai","thuần trung","thuận an","thuận bắc","thuận châu","thuận giao","thuận hoà","thuận hòa","thuận hóa","thuận hưng","thuận hạnh","thuận lợi","thuận mỹ","thuận nam","thuận thành","thàng tín","thành bình thọ","thành công","thành nam","thành nhất","thành sen","thành thới","thành vinh","thành đông","thác bà","thái bình","thái hoà","thái hòa","thái mỹ","thái ninh","thái sơn","thái thụy","thái tân","tháp mười","thông nguyên","thông nông","thông thụ","thông tây hội","thăng an","thăng bình","thăng phú","thăng trường","thăng điền","thư lâm","thư trì","thư vũ","thường lạc","thường phước","thường tân","thường tín","thường xuân","thượng bằng la","thượng cát","thượng cốc","thượng hà","thượng hồng","thượng long","thượng lâm","thượng minh","thượng ninh","thượng nông","thượng phúc","thượng quan","thượng sơn","thượng trạch","thượng đức","thạch an","thạch bình","thạch hà","thạch khê","thạch khôi","thạch lạc","thạch lập","thạch quảng","thạch thất","thạch xuân","thạnh an","thạnh bình","thạnh hòa","thạnh hóa","thạnh hưng","thạnh hải","thạnh lộc","thạnh lợi","thạnh mỹ","thạnh mỹ tây","thạnh phong","thạnh phú","thạnh phước","thạnh quới","thạnh thới an","thạnh trị","thạnh xuân","thạnh đông","thạnh đức","thảo nguyên","thất khê","thần khê","thần lĩnh","thần sa","thắng lộc","thắng lợi","thắng mố","thịnh minh","thọ bình","thọ long","thọ lập","thọ ngọc","thọ phong","thọ phú","thọ sơn","thọ văn","thọ xuân","thống nhất","thốt nốt","thổ tang","thới an","thới an hội","thới an đông","thới bình","thới hòa","thới hưng","thới lai","thới long","thới sơn","thới thuận","thục phán","thụy anh","thụy hùng","thủ dầu một","thủ thừa","thủ đức","thủy nguyên","thủy xuân","tiên du","tiên hoa","tiên hưng","tiên hải","tiên la","tiên lãng","tiên lương","tiên lục","tiên lữ","tiên minh","tiên nguyên","tiên phước","tiên sơn","tiên thủy","tiên tiến","tiên trang","tiên yên","tiên điền","tiên đồng","tiến thành","tiến thắng","tiền hải","tiền phong","tiểu cần","toàn lưu","toàn thắng","tri lễ","tri phú","tri tôn","triệu bình","triệu cơ","triệu lộc","triệu phong","triệu sơn","triệu việt vương","trung an","trung chính","trung hiệp","trung hà","trung hưng","trung hạ","trung hội","trung khánh vĩnh","trung kênh","trung lý","trung lộc","trung mỹ tây","trung ngãi","trung nhứt","trung sơn","trung thuần","trung thành","trung thịnh","trung tâm","truông mít","trà bồng","trà câu","trà côn","trà cú","trà giang","trà giáp","trà leng","trà linh","trà liên","trà lý","trà lĩnh","trà my","trà tân","trà tập","trà vinh","trà vong","trà vân","trà ôn","trà đốc","tràm chim","tràng xá","tràng định","trí phải","trí quả","trùng khánh","trúc lâm","trương quang trọng","trường giang","trường hà","trường khánh","trường long","trường long hòa","trường long tây","trường lâm","trường lưu","trường ninh","trường phú","trường sinh","trường sơn","trường thi","trường thành","trường tân","trường vinh","trường văn","trường xuân","trại cau","trạm lộ","trạm thản","trạm tấu","trảng bom","trảng bàng","trảng dài","trấn biên","trấn yên","trần hưng đạo","trần liễu","trần lãm","trần nhân tông","trần phán","trần phú","trần thương","trần văn thời","trần đề","trị an","trịnh tường","trừ văn thố","trực ninh","tu bông","tu mơ rông","tu vũ","tuy an bắc","tuy an nam","tuy an tây","tuy an đông","tuy hòa","tuy phong","tuy phước","tuy phước bắc","tuy phước tây","tuy phước đông","tuy đức","tuyên bình","tuyên hóa","tuyên lâm","tuyên phú","tuyên quang","tuyên sơn","tuyên thạnh","tuấn sơn","tuấn đạo","tuần châu","tuần giáo","tuệ tĩnh","tà hine","tà hộc","tà lài","tà năng","tà rụt","tà tổng","tà xi láng","tà xùa","tà đùng","tài văn","tánh linh","tát ngà","tân an","tân an hội","tân biên","tân bình","tân chi","tân châu","tân cương","tân dân","tân dĩnh","tân dương","tân giang","tân gianh","tân hiệp","tân hà lâm hà","tân hào","tân hòa","tân hưng","tân hương","tân hạnh","tân hải","tân hồng","tân hộ cơ","tân hội","tân hợp","tân khai","tân khánh","tân khánh trung","tân kỳ","tân long","tân long hội","tân lân","tân lĩnh","tân lược","tân lạc","tân lập","tân lộc","tân lợi","tân mai","tân minh","tân mỹ","tân ngãi","tân nhuận đông","tân nhựt","tân ninh","tân pheo","tân phong","tân phú","tân phú trung","tân phú đông","tân phước","tân phước 1","tân phước 2","tân phước 3","tân phước hưng","tân quan","tân quang","tân quới","tân sơn","tân sơn hòa","tân sơn nhì","tân sơn nhất","tân thanh","tân thuận","tân thuận bình","tân thành","tân thành bình","tân thạnh","tân thới","tân thới hiệp","tân thủy","tân tiến","tân tri","tân triều","tân trào","tân trịnh","tân trụ","tân tây","tân tạo","tân tập","tân uyên","tân văn","tân vĩnh lộc","tân xuân","tân yên","tân ân","tân điền","tân đoàn","tân đông","tân đông hiệp","tân định","tây cốc","tây giang","tây hiếu","tây hoa lư","tây hòa","tây hồ","tây khánh sơn","tây khánh vĩnh","tây mỗ","tây nam","tây nha trang","tây ninh hòa","tây phú","tây phương","tây sơn","tây thái ninh","tây thạnh","tây thụy anh","tây tiền hải","tây trà","tây trà bồng","tây tựu","tây yên","tây yên tử","tây đô","tìa dình","tích lương","tô châu","tô hiệu","tô múa","tùng bá","tùng lộc","tùng thiện","tùng vài","tú lệ","tăng nhơn phú","tĩnh gia","tĩnh túc","tơ tung","tư nghĩa","tương dương","tương mai","tường hạ","tượng lĩnh","tạ an khương","tạ khoa","tả củ tỷ","tả lèng","tả phìn","tả van","tầm vu","tập ngãi","tập sơn","tằng loỏng","tề lỗ","tịnh biên","tịnh khê","tống sơn","tống trân","tổng cọt","tủa chùa","tủa sín chải","tủa thàng","tứ kỳ","tứ minh","tứ mỹ","từ liêm","từ sơn","tự lạn","u minh","u minh thượng","uar","uông bí","vinh hưng","vinh kim","vinh lộc","vinh phú","vinh quý","việt an","việt hòa","việt hưng","việt hồng","việt khê","việt lâm","việt tiến","việt trì","việt xuyên","việt yên","vu gia","vàm cỏ","vàng danh","vân bán","vân canh","vân du","vân hà","vân hòa","vân hồ","vân khánh","vân nham","vân phú","vân sơn","vân tụ","vân đình","vô tranh","võ cường","võ lao","võ miếu","võ nhai","văn bàn","văn chấn","văn giang","văn hiến","văn hán","văn kiều","văn lang","văn lãng","văn lăng","văn miếu","văn miếu - quốc tử giám","văn môn","văn nho","văn phú","văn quan","vĩnh am","vĩnh an","vĩnh bình","vĩnh bảo","vĩnh chân","vĩnh châu","vĩnh công","vĩnh gia","vĩnh hanh","vĩnh hoàng","vĩnh hòa","vĩnh hòa hưng","vĩnh hưng","vĩnh hải","vĩnh hảo","vĩnh hậu","vĩnh hội","vĩnh hựu","vĩnh kim","vĩnh linh","vĩnh lại","vĩnh lộc","vĩnh lợi","vĩnh mỹ","vĩnh phong","vĩnh phú","vĩnh phúc","vĩnh phước","vĩnh quang","vĩnh sơn","vĩnh thanh","vĩnh thuận","vĩnh thuận đông","vĩnh thành","vĩnh thông","vĩnh thạnh","vĩnh thạnh trung","vĩnh thịnh","vĩnh thủy","vĩnh thực","vĩnh trinh","vĩnh trạch","vĩnh trụ","vĩnh tuy","vĩnh tân","vĩnh tường","vĩnh tế","vĩnh viễn","vĩnh xuân","vĩnh xương","vĩnh yên","vĩnh điều","vĩnh định","vũ dương","vũ lăng","vũ lễ","vũ ninh","vũ phúc","vũ quang","vũ quý","vũ thư","vũ tiên","vũng tàu","vũng áng","vườn lài","vạn an","vạn hưng","vạn linh","vạn lộc","vạn ninh","vạn phú","vạn thắng","vạn tường","vạn xuân","vạn đức","vật lại","vệ giang","vị khê","vị thanh","vị thanh 1","vị thủy","vị tân","vị xuyên","vụ bản","vụ bổn","vỹ dạ","xa dung","xã hưng đạo","xã trung giã","xã đan phượng","xuyên mộc","xuân an","xuân bình","xuân bắc","xuân chinh","xuân cảnh","xuân cẩm","xuân du","xuân dương","xuân giang","xuân hòa","xuân hưng","xuân hương - đà lạt","xuân hải","xuân hồng","xuân lâm","xuân lãng","xuân lãnh","xuân lũng","xuân lương","xuân lập","xuân lộc","xuân mai","xuân nha","xuân phú","xuân phương","xuân phước","xuân quang","xuân quế","xuân sơn","xuân thành","xuân thái","xuân thọ","xuân thới sơn","xuân trúc","xuân trường","xuân trường - đà lạt","xuân tín","xuân viên","xuân vân","xuân ái","xuân đài","xuân đông","xuân đường","xuân đỉnh","xuân định","xà phiên","xã bắc sơn","xím vàng","xín mần","xóm chiếu","xốp","y tý","ya hội","ya ly","ya ma","yang mao","yên bài","yên bái","yên bình","yên châu","yên cường","yên dũng","yên hoa","yên hòa","yên khánh","yên khương","yên kỳ","yên lãng","yên lạc","yên lập","yên minh","yên mô","yên mạc","yên mỹ","yên na","yên nghĩa","yên nguyên","yên nhân","yên ninh","yên phong","yên phú","yên phúc","yên sơn","yên sở","yên thành","yên thắng","yên thế","yên thịnh","yên thọ","yên thổ","yên thủy","yên trung","yên trường","yên trạch","yên trị","yên từ","yên tử","yên xuân","yên định","yên đồng","yết kiêu","ái quốc","ái tử","ân hảo","ân thi","ân tường","âu cơ","âu lâu","óc eo","ô chợ dừa","ô diên","ô loan","ô lâm","ô môn","ý yên","đa kia","đa mai","đa phúc","đak lua","đak nhau","đak pơ","đak rong","đak sơmei","đak đoa","đakrông","đam rông 1","đam rông 2","đam rông 3","đam rông 4","đan hải","đan thượng","đan điền","đinh trang thượng","đinh văn lâm hà","điềm he","điềm thụy","điền lư","điền quang","điền xá","điện biên phủ","điện bàn","điện bàn bắc","điện bàn tây","điện bàn đông","đoan hùng","đoài dương","đoài phương","đoàn kết","đoàn đào","đà bắc","đàm thủy","đào duy từ","đào viên","đào xá","đá bạc","đèo gia","đình cương","đình lập","đình phong","đô lương","đô vinh","đôn châu","đông a","đông anh","đông cuông","đông cứu","đông gia nghĩa","đông giang","đông hiếu","đông hiệp","đông hoa lư","đông hà","đông hòa","đông hưng","đông hưng thuận","đông hải","đông khánh sơn","đông khê","đông kinh","đông lộc","đông mai","đông ngũ","đông ngạc","đông ninh hòa","đông phú","đông phước","đông quan","đông quang","đông sơn","đông thuận","đông thành","đông thái","đông thái ninh","đông thạnh","đông thọ","đông thụy anh","đông tiên hưng","đông tiến","đông tiền hải","đông triều","đông trà bồng","đông trạch","đăk bla","đăk cấm","đăk hà","đăk kôi","đăk long","đăk mar","đăk môn","đăk plô","đăk pxi","đăk pék","đăk rve","đăk rơ wa","đăk sao","đăk song","đăk tô","đăk tờ kan","đăk ui","đăk ơ","đặc khu hoàng sa","đơn dương","đường an","đường hoa","đường hào","đường hồng","đường thượng","đạ huoai","đạ huoai 2","đạ huoai 3","đạ tẻh","đạ tẻh 2","đạ tẻh 3","đại an","đại hoàng","đại huệ","đại hải","đại lai","đại lãnh","đại lộc","đại mỗ","đại ngãi","đại phúc","đại phước","đại sơn","đại thanh","đại thành","đại từ","đại xuyên","đại điền","đại đình","đại đồng","đạo thạnh","đạo trù","đất mũi","đất mới","đất đỏ","đầm dơi","đầm hà","đắc pring","đắk liêng","đắk mil","đắk phơi","đắk song","đắk sắk","đắk wil","đặc khu bạch long vĩ","đặc khu cát hải","đặc khu cô tô","đặc khu côn đảo","đặc khu cồn cỏ","đặc khu kiên hải","đặc khu lý sơn","đặc khu phú quý","đặc khu phú quốc","đặc khu thổ châu","đặc khu trường sa","đặc khu vân đồn","đặng thùy trâm","đề gi","định công","định hòa","định hóa","định mỹ","định quán","định thành","định tân","đốc binh kiều","đống đa","đồ sơn","đồng bằng","đồng châu","đồng dương","đồng hới","đồng hỷ","đồng kho","đồng khởi","đồng kỳ","đồng lê","đồng lương","đồng lộc","đồng nguyên","đồng phú","đồng phúc","đồng sơn","đồng thuận","đồng thái","đồng thịnh","đồng tiến","đồng tâm","đồng việt","đồng văn","đồng xoài","đồng xuân","đồng yên","đồng đăng","độc lập","đức an","đức bình","đức châu","đức cơ","đức huệ","đức hòa","đức hợp","đức linh","đức long","đức lương","đức lập","đức minh","đức nhuận","đức nhàn","đức phú","đức phổ","đức quang","đức thịnh","đức thọ","đức trọng","đức xuân","đức đồng","ứng hòa","ứng thiên"];
+
+function addrHasValidProvince(val) {
+  const v = val.toLowerCase();
+  return TINH_KEYS.some(k => v.includes(k));
+}
+
+function addrHasValidWard(val) {
+  const v = val.toLowerCase();
+  return XA_PHUONG_KEYS.some(k => v.includes(k));
+}
+
+function validateAddrField(inputId, errId) {
+  const val = $(inputId).value.trim();
+  // Bắt buộc phải có tên tỉnh/thành phố hợp lệ — phường/xã không thể thay thế
+  const invalid = val && !addrHasValidProvince(val);
+  $(errId).classList.toggle("show", invalid);
+  return !invalid;
+}
+
+$("diaChiThuongTru").addEventListener("blur", () => validateAddrField("diaChiThuongTru","thuongTru_err"));
+$("diaChiLienHe").addEventListener("blur", () => validateAddrField("diaChiLienHe","lienHe_err"));
+
+const maKhoiSel = $("maKhoi"), khoiSel = $("khoi"), maPBSel = $("maPhongBan"), pbSel = $("phongBan");
+
+// Khởi tạo dropdown khối
+KHOI_LIST.forEach(k => {
+  maKhoiSel.add(new Option(k.ma, k.ma));
+  khoiSel.add(new Option(k.ten, k.ma)); // value lưu mã khối để đồng bộ
+});
+
+function fillPhongBanOptions(maKhoi){
+  maPBSel.length = 1;
+  pbSel.length = 1;
+  maPBSel.options[0].text = "-- Chọn --";
+  pbSel.options[0].text = "-- Chọn --";
+  const list = PHONGBAN_LIST.filter(p => p.maKhoi === maKhoi);
+  list.forEach(p => {
+    maPBSel.add(new Option(p.maPB, p.maPB));
+    pbSel.add(new Option(p.ten, p.maPB));
+  });
+  const hasKhoi = !!maKhoi;
+  maPBSel.disabled = !hasKhoi;
+  pbSel.disabled = !hasKhoi;
+  if(!hasKhoi){
+    maPBSel.options[0].text = "-- Chọn khối trước --";
+    pbSel.options[0].text = "-- Chọn khối trước --";
+  }
+}
+
+maKhoiSel.addEventListener("change", () => {
+  khoiSel.value = maKhoiSel.value;
+  fillPhongBanOptions(maKhoiSel.value);
+});
+khoiSel.addEventListener("change", () => {
+  maKhoiSel.value = khoiSel.value;
+  fillPhongBanOptions(khoiSel.value);
+});
+maPBSel.addEventListener("change", () => { pbSel.value = maPBSel.value; });
+pbSel.addEventListener("change", () => { maPBSel.value = pbSel.value; });
+
+fillPhongBanOptions(""); // trạng thái ban đầu
+
+// ====== Gửi form ======
+const form = $("employeeForm");
+const statusMsg = $("statusMsg");
+const submitBtn = $("submitBtn");
+
+function getPBTen(maPB){
+  const found = PHONGBAN_LIST.find(p => p.maPB === maPB);
+  return found ? found.ten : "";
+}
+function getKhoiTen(ma){
+  const found = KHOI_LIST.find(k => k.ma === ma);
+  return found ? found.ten : "";
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  statusMsg.textContent = "";
+  statusMsg.className = "status-msg";
+
+  if (!form.checkValidity()){
+    form.reportValidity();
+    return;
+  }
+
+  // Validate địa chỉ sau sáp nhập
+  const ttOk = validateAddrField("diaChiThuongTru","thuongTru_err");
+  const lhOk = validateAddrField("diaChiLienHe","lienHe_err");
+  if (!ttOk || !lhOk) return;
+  if (WEBHOOK_URL.indexOf("DÁN_URL") !== -1){
+    statusMsg.textContent = "Chưa cấu hình URL Web App (WEBHOOK_URL) trong file.";
+    statusMsg.className = "status-msg error";
+    return;
+  }
+
+  // Hàm chuyển yyyy-mm-dd → dd/mm/yyyy
+  function fmtDate(val) {
+    if (!val) return "";
+    const [y, m, d] = val.split("-");
+    return d + "/" + m + "/" + y;
+  }
+  // Hàm giữ số 0 đầu (lưu dạng text có dấu nháy đơn để Google Sheet không cắt số 0)
+  function fmtNum(val) {
+    return val ? "'" + val.trim() : "";
+  }
+
+  const payload = {
+    maKhoi: maKhoiSel.value,
+    khoi: getKhoiTen(maKhoiSel.value),
+    maPhongBan: maPBSel.value,
+    phongBan: getPBTen(pbSel.value),
+    maNhanVien: $("maNhanVien").value.trim(),
+    hoTen: $("hoTen").value.trim(),
+    chucVu: $("chucVu").value.trim(),
+    gioiTinh: $("gioiTinh").value,
+    phanLoai: $("phanLoai").value,
+    trangThai: $("trangThai").value,
+    soDienThoai: fmtNum($("soDienThoai").value),
+    email: $("email").value.trim(),
+    ngaySinh: fmtDate($("ngaySinh").value),
+    soCCCD: fmtNum($("soCCCD").value),
+    ngayCapCCCD: fmtDate($("ngayCapCCCD").value),
+    noiCap: $("noiCap").value.trim(),
+    diaChiThuongTru: $("diaChiThuongTru").value.trim(),
+    diaChiLienHe: $("diaChiLienHe").value.trim(),
+    ngayVaoLamViec: fmtDate($("ngayVaoLamViec").value),
+    soSoBHXH: fmtNum($("soSoBHXH").value),
+    maSoThue: fmtNum($("maSoThue").value),
+    soTaiKhoan: fmtNum($("soTaiKhoan").value),
+    tenTaiKhoan: $("tenTaiKhoan").value.trim(),
+    nganHang: $("nganHang").value.trim(),
+    hoTenNguoiThan: $("hoTenNguoiThan").value.trim(),
+    sdtNguoiThan: fmtNum($("sdtNguoiThan").value)
+  };
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Đang gửi...";
+
+  try {
+    // Gửi dạng text/plain để tránh preflight CORS bị Apps Script chặn.
+    await fetch(WEBHOOK_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    statusMsg.className = "status-msg success";
+    statusMsg.textContent = "Đã gửi thông tin thành công. Cảm ơn bạn!";
+    form.reset();
+    fillPhongBanOptions("");
+    $("thuongTru_err").classList.remove("show");
+    $("lienHe_err").classList.remove("show");
+  } catch (err) {
+    statusMsg.textContent = "Gửi thất bại: " + err.message + " — kiểm tra lại kết nối mạng.";
+    statusMsg.className = "status-msg error";
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Gửi thông tin";
+  }
+});
+
+
+async function callApi(action, extra){
+  const body = Object.assign({ action }, extra || {});
+  const res = await fetch(CONFIG.API_URL, {
+    method: 'POST',
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+function isHrLoggedIn(){
+  return !!sessionStorage.getItem('hr_token');
+}
+
+function refreshHrUi(){
+  const btn = document.getElementById('hrStatusBtn');
+  if (isHrLoggedIn()){
+    btn.textContent = 'HR: Đăng xuất';
+    btn.classList.add('active');
+    document.getElementById('bieuMauAdmin').style.display = 'block';
+  } else {
+    btn.textContent = 'Đăng nhập HR';
+    btn.classList.remove('active');
+    document.getElementById('bieuMauAdmin').style.display = 'none';
+  }
+}
+
+function onHrButtonClick(){
+  if (isHrLoggedIn()){
+    sessionStorage.removeItem('hr_token');
+    refreshHrUi();
+  } else {
+    openModal('loginOverlay');
+  }
+}
+
+async function submitHrLogin(){
+  const pass = document.getElementById('hrPasswordInput').value;
+  const msg = document.getElementById('loginMsg');
+  msg.className = 'form-msg';
+  if (!pass){ msg.className='form-msg err'; msg.textContent='Vui lòng nhập mật khẩu.'; return; }
+  try{
+    const r = await callApi('hrLogin', { password: pass });
+    if (r.ok){
+      sessionStorage.setItem('hr_token', r.token);
+      msg.className = 'form-msg ok';
+      msg.textContent = 'Đăng nhập thành công!';
+      refreshHrUi();
+      setTimeout(()=>{ closeModal('loginOverlay'); document.getElementById('hrPasswordInput').value=''; msg.className='form-msg'; }, 700);
+    } else {
+      msg.className = 'form-msg err';
+      msg.textContent = r.error || 'Đăng nhập thất bại.';
+    }
+  }catch(err){
+    msg.className = 'form-msg err';
+    msg.textContent = 'Lỗi kết nối: ' + err.message;
+  }
+}
+
+/* ---------- BHXH form ---------- */
+async function submitBhxhForm(evt){
+  evt.preventDefault();
+  const form = document.getElementById('bhxhForm');
+  const msg = document.getElementById('bhxhMsg');
+  const btn = document.getElementById('bhxhSubmitBtn');
+
+  function fmtDateBHXH(val){
+    if (!val) return '';
+    const [y,m,d] = val.split('-');
+    return d + '/' + m + '/' + y;
+  }
+  function fmtNumBHXH(val){
+    return val ? "'" + val.trim() : '';
+  }
+
+  const data = {};
+  Array.from(form.elements).forEach(el=>{
+    if (!el.name) return;
+    if (el.name === 'Ngày sinh') data[el.name] = fmtDateBHXH(el.value);
+    else if (el.name === 'CCCD' || el.name === 'SDT' || el.name === 'Mã số thuế' || el.name === 'Số BHXH') data[el.name] = fmtNumBHXH(el.value);
+    else data[el.name] = el.value;
+  });
+  btn.disabled = true; btn.textContent = 'Đang nộp...';
+  msg.className = 'form-msg';
+  try{
+    const r = await callApi('submitBHXH', { data });
+    if (r.ok){
+      msg.className = 'form-msg ok';
+      msg.textContent = 'Đã nộp thông tin thành công. Cảm ơn bạn!';
+      form.reset();
+    } else {
+      msg.className = 'form-msg err';
+      msg.textContent = r.error || 'Có lỗi xảy ra, vui lòng thử lại.';
+    }
+  }catch(err){
+    msg.className = 'form-msg err';
+    msg.textContent = 'Lỗi kết nối: ' + err.message;
+  }finally{
+    btn.disabled = false; btn.textContent = 'Nộp thông tin';
+  }
+}
+
+/* ---------- Biểu mẫu ---------- */
+async function openBieuMau(){
+  openModal('bieuMauModal');
+  refreshHrUi();
+  const listEl = document.getElementById('bieuMauList');
+  listEl.innerHTML = '<div class="empty-state">Đang tải...</div>';
+  try{
+    const r = await callApi('getBieuMau');
+    if (r.ok){
+      bieuMauCache = r.items || [];
+      renderBieuMauList();
+    } else {
+      listEl.innerHTML = '<div class="empty-state">' + (r.error || 'Không tải được dữ liệu') + '</div>';
+    }
+  }catch(err){
+    listEl.innerHTML = '<div class="empty-state">Lỗi kết nối: ' + err.message + '</div>';
+  }
+}
+
+function switchBieuMauTab(btn, loai){
+  document.querySelectorAll('#bieuMauModal .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentBieuMauLoai = loai;
+  renderBieuMauList();
+}
+
+function renderBieuMauList(){
+  const listEl = document.getElementById('bieuMauList');
+  const items = bieuMauCache.filter(it => (it.loai || 'Đơn') === currentBieuMauLoai);
+  if (!items.length){
+    listEl.innerHTML = '<div class="empty-state">Chưa có biểu mẫu nào trong mục này.</div>';
+    return;
+  }
+  listEl.innerHTML = items.map(it => `
+    <div class="list-item">
+      <a href="${escapeHtml(it.link)}" target="_blank" rel="noopener">${escapeHtml(it.ten)}</a>
+      ${isHrLoggedIn() ? `<button class="del-btn" onclick="deleteBieuMau('${escapeAttr(it.stt)}')">✕</button>` : ''}
+    </div>
+  `).join('');
+}
+
+function setNewBmLoai(loai){
+  newBmLoai = loai;
+  document.getElementById('loaiBtnDon').classList.toggle('sel', loai === 'Đơn');
+  document.getElementById('loaiBtnPhieu').classList.toggle('sel', loai === 'Phiếu đánh giá');
+  document.getElementById('loaiBtnKhac').classList.toggle('sel', loai === 'Khác');
+}
+
+async function addBieuMau(){
+  const ten = document.getElementById('newBmTen').value.trim();
+  const link = document.getElementById('newBmLink').value.trim();
+  const msg = document.getElementById('bmAdminMsg');
+  if (!ten || !link){
+    msg.className = 'form-msg err';
+    msg.textContent = 'Vui lòng nhập đủ tên và link.';
+    return;
+  }
+  try{
+    const r = await callApi('addBieuMau', {
+      token: sessionStorage.getItem('hr_token'),
+      data: { ten, link, loai: newBmLoai }
+    });
+    if (r.ok){
+      msg.className = 'form-msg ok';
+      msg.textContent = 'Đã thêm biểu mẫu.';
+      document.getElementById('newBmTen').value = '';
+      document.getElementById('newBmLink').value = '';
+      openBieuMau();
+    } else {
+      msg.className = 'form-msg err';
+      msg.textContent = r.error || 'Có lỗi xảy ra.';
+    }
+  }catch(err){
+    msg.className = 'form-msg err';
+    msg.textContent = 'Lỗi kết nối: ' + err.message;
+  }
+}
+
+async function deleteBieuMau(stt){
+  if (!confirm('Xóa biểu mẫu này?')) return;
+  try{
+    const r = await callApi('deleteBieuMau', {
+      token: sessionStorage.getItem('hr_token'),
+      stt
+    });
+    if (r.ok){ openBieuMau(); }
+    else { alert(r.error || 'Không xóa được'); }
+  }catch(err){
+    alert('Lỗi kết nối: ' + err.message);
+  }
+}
+
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){ return String(s == null ? '' : s).replace(/'/g, "\\'"); }
+
+/* ---------- init ---------- */
+refreshHrUi();
+</script>
+</body>
+</html>
