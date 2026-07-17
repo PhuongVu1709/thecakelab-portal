@@ -169,6 +169,11 @@
   .list-item .list-item-name{color:var(--blue); font-weight:600; font-size:14px;}
   .list-item .list-item-actions{display:flex; align-items:center; gap:8px; flex-shrink:0;}
   .btn-sm{padding:7px 13px; font-size:12.5px; border-radius:9px;}
+  .icon-btn{
+    width:38px; height:38px; padding:0 !important;
+    display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
   .list-item .del-btn{
     border:none; background:rgba(220,53,69,0.1); color:#c0392b;
     width:28px;height:28px;border-radius:8px; cursor:pointer; font-size:13px; flex-shrink:0;
@@ -991,9 +996,23 @@ function switchPhieuDoiTuong(doiTuong){
 }
 
 function toDriveDownloadLink(link){
-  const s = String(link || '');
-  let m = s.match(/\/d\/([a-zA-Z0-9_-]+)/) || s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  const s = String(link || '').trim();
+  if (!s) return s;
+
+  // Google Docs / Sheets / Slides — cần export theo định dạng phù hợp
+  let m = s.match(/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return `https://docs.google.com/document/d/${m[1]}/export?format=docx`;
+
+  m = s.match(/docs\.google\.com\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return `https://docs.google.com/spreadsheets/d/${m[1]}/export?format=xlsx`;
+
+  m = s.match(/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return `https://docs.google.com/presentation/d/${m[1]}/export/pptx`;
+
+  // File thường trên Drive (PDF, ảnh, Word/Excel đã upload...)
+  m = s.match(/\/d\/([a-zA-Z0-9_-]+)/) || s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
   if (m && m[1]) return `https://drive.google.com/uc?export=download&id=${m[1]}`;
+
   return s;
 }
 
@@ -1012,8 +1031,10 @@ function renderBieuMauList(){
     <div class="list-item">
       <span class="list-item-name">${escapeHtml(it.ten)}${it.doiTuong && currentBieuMauLoai !== 'PHIẾU ĐÁNH GIÁ' ? ` <span class="hint" style="display:inline;">(${escapeHtml(it.doiTuong)})</span>` : ''}</span>
       <div class="list-item-actions">
-        <a class="btn btn-outline btn-sm" href="${escapeHtml(it.link)}" target="_blank" rel="noopener">Xem</a>
-        <a class="btn btn-primary btn-sm" href="${escapeHtml(toDriveDownloadLink(it.link))}" target="_blank" rel="noopener" download>Tải xuống</a>
+        <a class="btn btn-outline btn-sm icon-btn" href="${escapeHtml(it.link)}" target="_blank" rel="noopener" aria-label="Xem" title="Xem">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+        </a>
+        <a class="btn btn-primary btn-sm" href="${escapeHtml(toDriveDownloadLink(it.link))}" target="_blank" rel="noopener">Tải xuống</a>
         ${isHrLoggedIn() ? `<button class="del-btn" onclick="deleteBieuMau('${escapeAttr(it.stt)}')">✕</button>` : ''}
       </div>
     </div>
