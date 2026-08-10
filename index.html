@@ -345,6 +345,109 @@
   .contact-line{margin:4px 8px 4px; font-size:13px; color:var(--text); font-weight:600;}
 
   /* ============================================================
+     QUY ĐỊNH / QUYẾT ĐỊNH / THÔNG BÁO
+     ============================================================ */
+  .category-grid{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:14px;
+  }
+  @media (max-width:560px){ .category-grid{grid-template-columns:1fr;} }
+  .category-card{
+    display:flex; align-items:center; gap:14px;
+    background:#fff; border:1px solid var(--line); border-radius:16px;
+    padding:18px; cursor:pointer; text-align:left; font-family:inherit;
+    transition:.15s; width:100%;
+  }
+  .category-card:hover{ box-shadow:0 8px 20px rgba(3,44,125,0.08); border-color:#e2d6c0; transform:translateY(-1px); }
+  .category-card .cat-icon{
+    width:44px; height:44px; border-radius:13px; flex-shrink:0;
+    background:rgba(243,112,33,0.12); color:var(--orange);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .category-card .cat-info{min-width:0;}
+  .category-card .cat-name{font-weight:700; color:var(--blue); font-size:14.5px; line-height:1.3;}
+  .category-card .cat-count{font-size:12px; color:var(--muted); margin-top:2px;}
+
+  .doc-back-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    border:none; background:rgba(3,44,125,0.07); color:var(--blue);
+    font-family:inherit; font-weight:600; font-size:13px; cursor:pointer;
+    padding:8px 14px; border-radius:999px; margin-bottom:14px;
+  }
+  .doc-back-btn:hover{background:rgba(3,44,125,0.14);}
+
+  .doc-toolbar{margin-bottom:14px;}
+  .doc-search-input{
+    width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line);
+    font-family:inherit; font-size:14.5px; background:var(--cream);
+  }
+  .doc-search-input:focus{ outline:none; border-color:var(--orange); }
+  .doc-result-count{font-size:12px; color:var(--muted); margin:8px 2px 0;}
+
+  .doc-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+  table.doc-table{ width:100%; border-collapse:collapse; font-size:13.5px; min-width:640px; }
+  table.doc-table th{
+    background:var(--cream); color:var(--blue); font-weight:700; font-size:12px;
+    letter-spacing:.3px; text-transform:uppercase; text-align:left;
+    padding:12px 14px; border-bottom:1.5px solid var(--line); white-space:nowrap;
+    position:relative;
+  }
+  table.doc-table td{
+    padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:top;
+    color:var(--text);
+  }
+  table.doc-table tr:last-child td{border-bottom:none;}
+  table.doc-table td.doc-td-ten{font-weight:600; color:var(--blue); min-width:200px;}
+  table.doc-table td.doc-td-actions{white-space:nowrap;}
+
+  .th-label-wrap{display:inline-flex; align-items:center; gap:6px;}
+  .filter-btn{
+    border:none; background:rgba(3,44,125,0.08); color:var(--blue);
+    width:20px; height:20px; border-radius:6px; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .filter-btn:hover{background:rgba(3,44,125,0.16);}
+  .filter-btn.active-filter{background:var(--orange); color:#fff;}
+
+  .filter-popover{
+    display:none; position:absolute; top:calc(100% + 6px); left:0; z-index:30;
+    background:#fff; border:1px solid var(--line); border-radius:12px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.15); padding:10px; min-width:200px;
+    max-height:260px; overflow-y:auto; text-transform:none; letter-spacing:normal;
+    font-weight:500;
+  }
+  .filter-popover.open{display:block;}
+  .filter-popover label{
+    display:flex; align-items:center; gap:8px; padding:6px 4px; border-radius:7px;
+    font-size:13px; color:var(--text); cursor:pointer; font-weight:500;
+  }
+  .filter-popover label:hover{background:var(--cream);}
+  .filter-popover input[type="checkbox"]{width:15px; height:15px; flex-shrink:0; accent-color:var(--orange);}
+  .filter-popover-actions{display:flex; gap:6px; margin-top:8px; padding-top:8px; border-top:1px solid var(--line);}
+  .filter-popover-actions button{
+    flex:1; border:none; border-radius:8px; padding:7px; font-family:inherit;
+    font-size:12px; font-weight:700; cursor:pointer;
+  }
+  .filter-apply-btn{background:var(--orange); color:#fff;}
+  .filter-clear-btn{background:rgba(3,44,125,0.08); color:var(--blue);}
+
+  /* Bảng chuyển sang dạng thẻ xếp chồng trên di động */
+  @media (max-width:720px){
+    table.doc-table{ min-width:0; }
+    table.doc-table thead{ display:none; }
+    table.doc-table, table.doc-table tbody, table.doc-table tr, table.doc-table td{ display:block; width:100%; }
+    table.doc-table tr{ padding:14px; border-bottom:8px solid var(--cream); }
+    table.doc-table td{ border:none; padding:6px 0; }
+    table.doc-table td.doc-td-ten{ font-size:14.5px; }
+    table.doc-table td::before{
+      content:attr(data-label); display:block; font-size:10.5px; font-weight:700;
+      color:var(--muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:2px;
+    }
+    table.doc-table td.doc-td-ten::before{ content:''; display:none; }
+    table.doc-table td.doc-td-actions{ padding-top:10px; }
+  }
+</style>
+<style>
+  /* ============================================================
      DI ĐỘNG — Portal chủ yếu dùng trên điện thoại nên ưu tiên tối ưu ở đây
      ============================================================ */
   @media (max-width:640px){
@@ -397,6 +500,12 @@
     .contact-phone-btn{ padding:8px 12px; }
 
     .loai-select-wrap button{ padding:10px 6px; font-size:12px; }
+
+    .category-card{ padding:15px; border-radius:14px; }
+    .doc-search-input{ padding:13px 14px; font-size:16px; }
+    .filter-popover{ position:fixed; top:auto; bottom:0; left:0; right:0; width:100%;
+      border-radius:18px 18px 0 0; max-height:60vh; }
+    .doc-back-btn{ padding:9px 14px; min-height:40px; }
   }
 </style>
 </head>
@@ -440,10 +549,9 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 11h6M9 15h6M9 7h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </div>
       <h3>Quy định</h3>
-      <span class="badge-soon">Đang phát triển</span>
-      <p>Mục tra cứu các Quy định nội bộ của công ty sẽ sớm ra mắt tại đây.</p>
+      <p>Quy định, quy trình, tài liệu hướng dẫn theo từng khối trong công ty.</p>
       <div class="actions">
-        <button class="btn btn-ghost" onclick="openModal('soonModal')">Xem trước</button>
+        <button class="btn btn-primary" onclick="openQuyDinh()">Xem quy định</button>
       </div>
     </div>
 
@@ -465,10 +573,9 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5-5-2.6-5 2.6.9-5.5-4-3.9 5.5-.8L12 3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
       </div>
       <h3>Quyết định</h3>
-      <span class="badge-soon">Đang phát triển</span>
-      <p>Mục tra cứu các Quyết định của công ty sẽ sớm ra mắt tại đây.</p>
+      <p>Tra cứu các Quyết định của công ty.</p>
       <div class="actions">
-        <button class="btn btn-ghost" onclick="openModal('soonModal')">Xem trước</button>
+        <button class="btn btn-primary" onclick="openQuyetDinh()">Xem quyết định</button>
       </div>
     </div>
 
@@ -478,10 +585,9 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 01-3.4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </div>
       <h3>Thông báo</h3>
-      <span class="badge-soon">Đang phát triển</span>
-      <p>Mục tra cứu các Thông báo của công ty sẽ sớm ra mắt tại đây.</p>
+      <p>Tra cứu các Thông báo của công ty.</p>
       <div class="actions">
-        <button class="btn btn-ghost" onclick="openModal('soonModal')">Xem trước</button>
+        <button class="btn btn-primary" onclick="openThongBao()">Xem thông báo</button>
       </div>
     </div>
 
@@ -745,6 +851,77 @@
       <button class="btn btn-primary" style="width:100%" onclick="addBieuMau()">+ Thêm biểu mẫu</button>
       <div class="form-msg" id="bmAdminMsg"></div>
     </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: QUY ĐỊNH ===================== -->
+<div class="overlay" id="quyDinhModal">
+  <div class="modal wide" style="max-width:980px;">
+    <div class="modal-scroll">
+    <div class="modal-head">
+      <div>
+        <h3 id="quyDinhTitle">Quy định</h3>
+        <p id="quyDinhSubtitle">Chọn nhóm quy định để xem chi tiết.</p>
+      </div>
+      <button class="close-x" onclick="closeModal('quyDinhModal')">✕</button>
+    </div>
+
+    <div id="quyDinhCategoryView" class="category-grid">
+      <div class="empty-state">Đang tải...</div>
+    </div>
+
+    <div id="quyDinhDetailView" style="display:none;">
+      <button class="doc-back-btn" onclick="quyDinhBackToCategories()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Quay lại
+      </button>
+      <div class="doc-toolbar">
+        <input type="text" class="doc-search-input" id="quyDinhSearch" placeholder="Tìm theo tên, đối tượng áp dụng...">
+      </div>
+      <div class="doc-table-wrap" id="quyDinhTableWrap"></div>
+      <div class="doc-result-count" id="quyDinhResultCount"></div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: QUYẾT ĐỊNH ===================== -->
+<div class="overlay" id="quyetDinhModal">
+  <div class="modal wide" style="max-width:980px;">
+    <div class="modal-scroll">
+    <div class="modal-head">
+      <div>
+        <h3>Quyết định</h3>
+        <p>Tra cứu các Quyết định của công ty.</p>
+      </div>
+      <button class="close-x" onclick="closeModal('quyetDinhModal')">✕</button>
+    </div>
+    <div class="doc-toolbar">
+      <input type="text" class="doc-search-input" id="quyetDinhSearch" placeholder="Tìm theo tên, đối tượng áp dụng...">
+    </div>
+    <div class="doc-table-wrap" id="quyetDinhTableWrap"></div>
+    <div class="doc-result-count" id="quyetDinhResultCount"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: THÔNG BÁO ===================== -->
+<div class="overlay" id="thongBaoModal">
+  <div class="modal wide" style="max-width:980px;">
+    <div class="modal-scroll">
+    <div class="modal-head">
+      <div>
+        <h3>Thông báo</h3>
+        <p>Tra cứu các Thông báo của công ty.</p>
+      </div>
+      <button class="close-x" onclick="closeModal('thongBaoModal')">✕</button>
+    </div>
+    <div class="doc-toolbar">
+      <input type="text" class="doc-search-input" id="thongBaoSearch" placeholder="Tìm theo tên, đối tượng áp dụng...">
+    </div>
+    <div class="doc-table-wrap" id="thongBaoTableWrap"></div>
+    <div class="doc-result-count" id="thongBaoResultCount"></div>
     </div>
   </div>
 </div>
@@ -1304,6 +1481,265 @@ async function deleteBieuMau(stt){
     alert('Lỗi kết nối: ' + err.message);
   }
 }
+
+/* ============================================================
+   QUY ĐỊNH / QUYẾT ĐỊNH / THÔNG BÁO — dùng chung 1 bộ hàm
+   ============================================================ */
+const DOC_CONFIG = {
+  quyDinh:   { modal: 'quyDinhModal',   action: 'getQuyDinh',   hasCategory: true,  wrap: 'quyDinhTableWrap',   search: 'quyDinhSearch',   count: 'quyDinhResultCount' },
+  quyetDinh: { modal: 'quyetDinhModal', action: 'getQuyetDinh', hasCategory: false, wrap: 'quyetDinhTableWrap', search: 'quyetDinhSearch', count: 'quyetDinhResultCount' },
+  thongBao:  { modal: 'thongBaoModal',  action: 'getThongBao',  hasCategory: false, wrap: 'thongBaoTableWrap',  search: 'thongBaoSearch',  count: 'thongBaoResultCount' }
+};
+
+const QUYDINH_CATEGORY_LIST = ['CHUNG', 'KHỐI QUẢN TRỊ VẬN HÀNH', 'KHỐI KINH DOANH', 'KHỐI SẢN XUẤT'];
+
+const docState = {
+  quyDinh:   { cache: [], category: null, search: '', filters: {} },
+  quyetDinh: { cache: [], search: '', filters: {} },
+  thongBao:  { cache: [], search: '', filters: {} }
+};
+
+async function openQuyDinh(){ await openDocSection('quyDinh'); }
+async function openQuyetDinh(){ await openDocSection('quyetDinh'); }
+async function openThongBao(){ await openDocSection('thongBao'); }
+
+async function openDocSection(key){
+  const cfg = DOC_CONFIG[key];
+  openModal(cfg.modal);
+
+  const state = docState[key];
+  state.search = '';
+  state.filters = {};
+  const searchEl = document.getElementById(cfg.search);
+  if (searchEl){
+    searchEl.value = '';
+    searchEl.oninput = () => { state.search = searchEl.value; renderDocTable(key); };
+  }
+
+  let loadingTargetEl;
+  if (key === 'quyDinh'){
+    state.category = null;
+    document.getElementById('quyDinhTitle').textContent = 'Quy định';
+    document.getElementById('quyDinhSubtitle').textContent = 'Chọn nhóm quy định để xem chi tiết.';
+    document.getElementById('quyDinhCategoryView').style.display = 'grid';
+    document.getElementById('quyDinhDetailView').style.display = 'none';
+    loadingTargetEl = document.getElementById('quyDinhCategoryView');
+  } else {
+    loadingTargetEl = document.getElementById(cfg.wrap);
+  }
+  loadingTargetEl.innerHTML = '<div class="empty-state">Đang tải...</div>';
+
+  try{
+    const r = await callApi(cfg.action);
+    if (r.ok){
+      state.cache = r.items || [];
+      if (key === 'quyDinh'){
+        renderQuyDinhCategories();
+      } else {
+        renderDocTable(key);
+      }
+    } else {
+      loadingTargetEl.innerHTML = '<div class="empty-state">' + (r.error || 'Không tải được dữ liệu') + '</div>';
+    }
+  }catch(err){
+    loadingTargetEl.innerHTML = '<div class="empty-state">Lỗi kết nối: ' + err.message + '</div>';
+  }
+}
+
+function formatCategoryLabel(cat){
+  // Hiển thị dễ đọc hơn: "KHỐI KINH DOANH" -> "Khối Kinh Doanh"
+  return String(cat).toLowerCase().replace(/(^|\s)\p{L}/gu, c => c.toUpperCase());
+}
+
+function renderQuyDinhCategories(){
+  const el = document.getElementById('quyDinhCategoryView');
+  const norm = (s) => String(s || '').trim().toUpperCase();
+  const counts = {};
+  QUYDINH_CATEGORY_LIST.forEach(c => { counts[c] = 0; });
+  docState.quyDinh.cache.forEach(it => {
+    const c = norm(it.loai);
+    if (counts[c] !== undefined) counts[c]++;
+  });
+
+  el.innerHTML = QUYDINH_CATEGORY_LIST.map(cat => `
+    <button type="button" class="category-card" onclick="selectQuyDinhCategory('${escapeAttr(cat)}')">
+      <span class="cat-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 11h6M9 15h6M9 7h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </span>
+      <span class="cat-info">
+        <span class="cat-name">${escapeHtml(formatCategoryLabel(cat))}</span>
+        <span class="cat-count">${counts[cat] || 0} tài liệu</span>
+      </span>
+    </button>
+  `).join('');
+}
+
+function selectQuyDinhCategory(cat){
+  const state = docState.quyDinh;
+  state.category = cat;
+  state.search = '';
+  state.filters = {};
+  const searchEl = document.getElementById('quyDinhSearch');
+  if (searchEl) searchEl.value = '';
+
+  document.getElementById('quyDinhTitle').textContent = 'Quy định — ' + formatCategoryLabel(cat);
+  document.getElementById('quyDinhSubtitle').textContent = 'Bấm vào tên để xem / tải về.';
+  document.getElementById('quyDinhCategoryView').style.display = 'none';
+  document.getElementById('quyDinhDetailView').style.display = 'block';
+  renderDocTable('quyDinh');
+}
+
+function quyDinhBackToCategories(){
+  docState.quyDinh.category = null;
+  document.getElementById('quyDinhTitle').textContent = 'Quy định';
+  document.getElementById('quyDinhSubtitle').textContent = 'Chọn nhóm quy định để xem chi tiết.';
+  document.getElementById('quyDinhCategoryView').style.display = 'grid';
+  document.getElementById('quyDinhDetailView').style.display = 'none';
+  closeAllFilterPopovers();
+}
+
+const DOC_FILTER_COLUMNS = ['doiTuong', 'ngayBanHanh'];
+const DOC_COLUMN_LABELS = { doiTuong: 'Đối tượng áp dụng', ngayBanHanh: 'Ngày ban hành' };
+
+// Dữ liệu đã lọc theo khối (chỉ áp dụng cho Quy định), CHƯA áp filter cột / tìm kiếm
+function getDocScopedItems(key){
+  const state = docState[key];
+  let items = state.cache;
+  if (key === 'quyDinh' && state.category){
+    const norm = (s) => String(s || '').trim().toUpperCase();
+    items = items.filter(it => norm(it.loai) === state.category);
+  }
+  return items;
+}
+
+// Dữ liệu sau khi áp dụng đầy đủ: khối + filter cột + tìm kiếm
+function getDocFilteredItems(key){
+  const state = docState[key];
+  let items = getDocScopedItems(key);
+
+  DOC_FILTER_COLUMNS.forEach(col => {
+    const selected = state.filters[col];
+    if (selected && selected.size > 0){
+      items = items.filter(it => selected.has(String(it[col] || '(Trống)')));
+    }
+  });
+
+  const q = String(state.search || '').trim().toLowerCase();
+  if (q){
+    items = items.filter(it =>
+      String(it.ten || '').toLowerCase().includes(q) ||
+      String(it.doiTuong || '').toLowerCase().includes(q)
+    );
+  }
+  return items;
+}
+
+function renderDocTable(key){
+  const cfg = DOC_CONFIG[key];
+  const wrapEl = document.getElementById(cfg.wrap);
+  const countEl = document.getElementById(cfg.count);
+  const items = getDocFilteredItems(key);
+
+  if (countEl) countEl.textContent = items.length + ' kết quả';
+
+  if (!items.length){
+    wrapEl.innerHTML = '<div class="empty-state">Không tìm thấy tài liệu phù hợp.</div>';
+    return;
+  }
+
+  const state = docState[key];
+  const thFilter = (col) => {
+    const active = !!(state.filters[col] && state.filters[col].size > 0);
+    return `
+      <span class="th-label-wrap">
+        ${escapeHtml(DOC_COLUMN_LABELS[col])}
+        <button type="button" class="filter-btn${active ? ' active-filter' : ''}" onclick="toggleFilterPopover(event, '${key}', '${col}')" aria-label="Lọc ${escapeAttr(DOC_COLUMN_LABELS[col])}">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M4 5h16l-6 8v6l-4 2v-8L4 5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="filter-popover" id="filterPop_${key}_${col}"></div>
+      </span>`;
+  };
+
+  wrapEl.innerHTML = `
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>Tên</th>
+          <th>${thFilter('doiTuong')}</th>
+          <th>${thFilter('ngayBanHanh')}</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items.map(it => `
+          <tr>
+            <td class="doc-td-ten" data-label="Tên">${escapeHtml(it.ten)}</td>
+            <td data-label="Đối tượng áp dụng">${escapeHtml(it.doiTuong) || '—'}</td>
+            <td data-label="Ngày ban hành">${escapeHtml(it.ngayBanHanh) || '—'}</td>
+            <td class="doc-td-actions" data-label="Thao tác">
+              <a class="btn btn-outline btn-sm icon-btn" href="${escapeHtml(it.link)}" target="_blank" rel="noopener" aria-label="Xem" title="Xem">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+              </a>
+              <a class="btn btn-primary btn-sm" href="${escapeHtml(toDriveDownloadLink(it.link))}" target="_blank" rel="noopener">Tải xuống</a>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function toggleFilterPopover(evt, key, col){
+  evt.stopPropagation();
+  const pop = document.getElementById('filterPop_' + key + '_' + col);
+  const wasOpen = pop.classList.contains('open');
+  closeAllFilterPopovers();
+  if (wasOpen) return;
+
+  const items = getDocScopedItems(key);
+  const values = Array.from(new Set(items.map(it => String(it[col] || '(Trống)')))).sort((a, b) => a.localeCompare(b, 'vi'));
+  const state = docState[key];
+  if (!state.filters[col]) state.filters[col] = new Set();
+  const selected = state.filters[col];
+
+  pop.innerHTML = `
+    ${values.map(v => `
+      <label>
+        <input type="checkbox" value="${escapeAttr(v)}" ${selected.has(v) ? 'checked' : ''}>
+        <span>${escapeHtml(v)}</span>
+      </label>
+    `).join('')}
+    <div class="filter-popover-actions">
+      <button type="button" class="filter-clear-btn" onclick="clearFilterPopover('${key}','${col}')">Bỏ lọc</button>
+      <button type="button" class="filter-apply-btn" onclick="applyFilterPopover('${key}','${col}')">Áp dụng</button>
+    </div>
+  `;
+  pop.classList.add('open');
+}
+
+function applyFilterPopover(key, col){
+  const pop = document.getElementById('filterPop_' + key + '_' + col);
+  const checked = Array.from(pop.querySelectorAll('input[type="checkbox"]:checked')).map(el => el.value);
+  docState[key].filters[col] = new Set(checked);
+  pop.classList.remove('open');
+  renderDocTable(key);
+}
+
+function clearFilterPopover(key, col){
+  docState[key].filters[col] = new Set();
+  const pop = document.getElementById('filterPop_' + key + '_' + col);
+  if (pop) pop.classList.remove('open');
+  renderDocTable(key);
+}
+
+function closeAllFilterPopovers(){
+  document.querySelectorAll('.filter-popover.open').forEach(el => el.classList.remove('open'));
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest && e.target.closest('.filter-popover, .filter-btn')) return;
+  closeAllFilterPopovers();
+});
 
 /* ---------- Danh bạ liên hệ ---------- */
 let danhBaCache = [];
