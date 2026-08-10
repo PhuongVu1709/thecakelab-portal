@@ -400,7 +400,11 @@
   .doc-search-input:focus{ outline:none; border-color:var(--orange); }
   .doc-result-count{font-size:12px; color:var(--muted); margin:8px 2px 0;}
 
-  .doc-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:14px; }
+  .doc-table-wrap{
+    overflow-x:auto; overflow-y:auto; border:1px solid var(--line); border-radius:14px;
+    max-height:65vh;
+  }
+  table.doc-table thead th{ position:sticky; top:0; z-index:2; }
   table.doc-table{ width:100%; border-collapse:collapse; font-size:13.5px; min-width:640px; }
   table.doc-table th{
     background:var(--cream); color:var(--blue); font-weight:700; font-size:12px;
@@ -519,6 +523,7 @@
     .loai-select-wrap button{ padding:10px 6px; font-size:12px; }
 
     .category-card{ padding:15px; border-radius:14px; }
+    .doc-table-wrap{ max-height:70vh; }
     .doc-search-input{ padding:13px 14px; font-size:16px; }
     .filter-popover{ position:fixed; top:auto; bottom:0; left:0; right:0; width:100%;
       border-radius:18px 18px 0 0; max-height:60vh; }
