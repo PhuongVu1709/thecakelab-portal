@@ -650,8 +650,8 @@
 </div>
 
 <!-- ===================== MODAL: THÔNG TIN NHÂN SỰ ===================== -->
-<div class="overlay" id="nhanSuModal">
-  <div class="modal wide" style="max-width:820px;">
+<div class="overlay fullscreen-overlay" id="nhanSuModal">
+  <div class="modal fullscreen">
     <div class="modal-scroll">
     <div class="sticky-block">
       <div class="modal-head">
@@ -776,8 +776,8 @@
 </div>
 
 <!-- ===================== MODAL: BHXH FORM ===================== -->
-<div class="overlay" id="bhxhModal">
-  <div class="modal wide">
+<div class="overlay fullscreen-overlay" id="bhxhModal">
+  <div class="modal fullscreen">
     <div class="modal-scroll">
     <div class="modal-head">
       <div>
@@ -827,9 +827,10 @@
 </div>
 
 <!-- ===================== MODAL: BIỂU MẪU ===================== -->
-<div class="overlay" id="bieuMauModal">
-  <div class="modal wide">
+<div class="overlay fullscreen-overlay" id="bieuMauModal">
+  <div class="modal fullscreen">
     <div class="modal-scroll">
+    <div class="sticky-block">
     <div class="modal-head">
       <div>
         <h3>Biểu mẫu</h3>
@@ -845,6 +846,7 @@
     <div class="sub-tabs" id="phieuSubTabs">
       <button type="button" class="sel" id="phieuBtnUV" onclick="switchPhieuDoiTuong('Ứng viên')">Ứng viên</button>
       <button type="button" id="phieuBtnNV" onclick="switchPhieuDoiTuong('Nhân viên')">Nhân viên</button>
+    </div>
     </div>
     <div id="bieuMauList"></div>
 
@@ -876,6 +878,7 @@
 <div class="overlay fullscreen-overlay" id="quyDinhModal">
   <div class="modal fullscreen">
     <div class="modal-scroll">
+    <div class="sticky-block">
     <div class="modal-head">
       <div>
         <h3 id="quyDinhTitle">Quy định</h3>
@@ -883,12 +886,7 @@
       </div>
       <button class="close-x" onclick="closeModal('quyDinhModal')">✕</button>
     </div>
-
-    <div id="quyDinhCategoryView" class="category-grid">
-      <div class="empty-state">Đang tải...</div>
-    </div>
-
-    <div id="quyDinhDetailView" style="display:none;">
+    <div id="quyDinhDetailControls" style="display:none;">
       <button class="doc-back-btn" onclick="quyDinhBackToCategories()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Quay lại
@@ -896,6 +894,14 @@
       <div class="doc-toolbar">
         <input type="text" class="doc-search-input" id="quyDinhSearch" placeholder="Tìm theo tên, đối tượng áp dụng...">
       </div>
+    </div>
+    </div>
+
+    <div id="quyDinhCategoryView" class="category-grid">
+      <div class="empty-state">Đang tải...</div>
+    </div>
+
+    <div id="quyDinhDetailView" style="display:none;">
       <div class="doc-table-wrap" id="quyDinhTableWrap"></div>
       <div class="doc-result-count" id="quyDinhResultCount"></div>
     </div>
@@ -907,6 +913,7 @@
 <div class="overlay fullscreen-overlay" id="quyetDinhModal">
   <div class="modal fullscreen">
     <div class="modal-scroll">
+    <div class="sticky-block">
     <div class="modal-head">
       <div>
         <h3>Quyết định</h3>
@@ -921,6 +928,7 @@
     <div class="doc-toolbar">
       <input type="text" class="doc-search-input" id="quyetDinhSearch" placeholder="Tìm theo tên, đối tượng áp dụng...">
     </div>
+    </div>
     <div class="doc-table-wrap" id="quyetDinhTableWrap"></div>
     <div class="doc-result-count" id="quyetDinhResultCount"></div>
     </div>
@@ -931,6 +939,7 @@
 <div class="overlay fullscreen-overlay" id="thongBaoModal">
   <div class="modal fullscreen">
     <div class="modal-scroll">
+    <div class="sticky-block">
     <div class="modal-head">
       <div>
         <h3>Thông báo</h3>
@@ -945,6 +954,7 @@
     <div class="doc-toolbar">
       <input type="text" class="doc-search-input" id="thongBaoSearch" placeholder="Tìm theo tên, đối tượng áp dụng...">
     </div>
+    </div>
     <div class="doc-table-wrap" id="thongBaoTableWrap"></div>
     <div class="doc-result-count" id="thongBaoResultCount"></div>
     </div>
@@ -952,8 +962,8 @@
 </div>
 
 <!-- ===================== MODAL: DANH BẠ LIÊN HỆ ===================== -->
-<div class="overlay" id="danhBaModal">
-  <div class="modal wide">
+<div class="overlay fullscreen-overlay" id="danhBaModal">
+  <div class="modal fullscreen">
     <div class="modal-scroll">
     <div class="modal-head">
       <div>
@@ -1548,6 +1558,7 @@ async function openDocSection(key){
     document.getElementById('quyDinhSubtitle').textContent = 'Chọn nhóm quy định để xem chi tiết.';
     document.getElementById('quyDinhCategoryView').style.display = 'grid';
     document.getElementById('quyDinhDetailView').style.display = 'none';
+    document.getElementById('quyDinhDetailControls').style.display = 'none';
     loadingTargetEl = document.getElementById('quyDinhCategoryView');
   } else {
     loadingTargetEl = document.getElementById(cfg.wrap);
@@ -1611,6 +1622,7 @@ function selectQuyDinhCategory(cat){
   document.getElementById('quyDinhSubtitle').textContent = 'Bấm vào tên để xem / tải về.';
   document.getElementById('quyDinhCategoryView').style.display = 'none';
   document.getElementById('quyDinhDetailView').style.display = 'block';
+  document.getElementById('quyDinhDetailControls').style.display = 'block';
   renderDocTable('quyDinh');
 }
 
@@ -1620,6 +1632,7 @@ function quyDinhBackToCategories(){
   document.getElementById('quyDinhSubtitle').textContent = 'Chọn nhóm quy định để xem chi tiết.';
   document.getElementById('quyDinhCategoryView').style.display = 'grid';
   document.getElementById('quyDinhDetailView').style.display = 'none';
+  document.getElementById('quyDinhDetailControls').style.display = 'none';
   closeAllFilterPopovers();
 }
 
